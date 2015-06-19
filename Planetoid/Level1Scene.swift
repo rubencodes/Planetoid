@@ -15,7 +15,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
     let kPlutoName = "pluto"
     let kExplodedName = "exploded"
     let kScoreName = "score"
-    let kCometCount = 100
+    let kCometCount = 120
     let kPlutoBaseline = 20
     var levelDelegate : LevelDelegate?
     var initialState : Double?
@@ -90,7 +90,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
     
     func setupScene() {
         //set background, dark blue
-        backgroundColor = UIColor(red: 0, green: 0, blue: 0.3, alpha: 1)
+        backgroundColor = UIColor(red: 0, green: 0, blue: 140/255, alpha: 1)
         
         setupPlayer() //setup pluto and add it to scene
         setupComets() //setup comets and add to scene
@@ -105,7 +105,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         scoreLabel.fontColor = SKColor.whiteColor()
         scoreLabel.text = "Health 100%"
         scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Right
-        scoreLabel.position = CGPoint(x: frame.size.width - 40, y: size.height - 40)
+        scoreLabel.position = CGPoint(x: frame.size.width - 20, y: size.height - 40)
         
         //add label to scene
         addChild(scoreLabel)
@@ -139,14 +139,15 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
     
     func setupComets() {
         //create kCometCount comets
-        for _ in 0...kCometCount {
+        for var i in 0...kCometCount {
             //create a random comet (3 variations)
             let comet = SKSpriteNode(imageNamed: "Comet-\(Int.random(min: 1, max: 3))")
             comet.name = kCometName
             
-            //generate a random position
+            //generate a pseudo-random position (weighted towards end of scene)
+            let sceneLength = CGRectGetMaxX(self.frame)*10
             let cometPositionY = CGFloat.random(min: CGRectGetMinY(self.frame), max: CGRectGetMaxY(self.frame))
-            let cometPositionX = CGFloat.random(min: CGRectGetMaxX(self.frame)-100, max: CGRectGetMaxX(self.frame)*10)
+            let cometPositionX = CGFloat.random(min: ((max(CGFloat(i)-20, 1))/CGFloat(kCometCount))*(sceneLength*0.9), max: sceneLength)
             comet.position = CGPointMake(cometPositionX, cometPositionY)
             
             

@@ -18,7 +18,7 @@ class GameViewController: UIViewController, LevelDelegate {
         super.viewDidLoad()
         
         //gets the current level from storage
-        let currentLevel = NSUserDefaults.standardUserDefaults().integerForKey("currentLevel")
+        let currentLevel = min(NSUserDefaults.standardUserDefaults().integerForKey("currentLevel"), 1)
         
         //loads current level
         changeLevelTo(currentLevel)
@@ -55,8 +55,8 @@ class GameViewController: UIViewController, LevelDelegate {
         
         /* Set the scale mode to scale to fit the window */
         level.scaleMode = .AspectFill
-        
         skView.presentScene(level)
+        skView.paused = false
     }
     
     override func shouldAutorotate() -> Bool {
@@ -85,8 +85,9 @@ class GameViewController: UIViewController, LevelDelegate {
         currentHealth += points
         
         //if the user is out of points, it's game over.
-        if points == 0 {
+        if currentHealth <= 0 {
             currentScene?.view?.paused = true
+            return 0
         }
         
         return currentHealth
@@ -112,8 +113,7 @@ class GameViewController: UIViewController, LevelDelegate {
         let alert = UIAlertController(title: "Good job!", message: "You've survived this level!", preferredStyle: UIAlertControllerStyle.Alert)
         alert.addAction(UIAlertAction(title: "Continue", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
             //get the next level and store it
-            let levelScene = self.getLevel(self.currentLevel)
-            self.currentScene = levelScene
+            self.changeLevelTo(self.currentLevel)
         }))
         
         self.presentViewController(alert, animated: true, completion: nil)
