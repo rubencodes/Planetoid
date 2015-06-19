@@ -1,0 +1,303 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		45A484651B33D51E002821BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A484641B33D51E002821BC /* AppDelegate.swift */; };
+		45A484671B33D51E002821BC /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 45A484661B33D51E002821BC /* GameScene.sks */; };
+		45A484691B33D51F002821BC /* Level1Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A484681B33D51F002821BC /* Level1Scene.swift */; };
+		45A4846B1B33D51F002821BC /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A4846A1B33D51F002821BC /* GameViewController.swift */; };
+		45A4846E1B33D51F002821BC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45A4846C1B33D51F002821BC /* Main.storyboard */; };
+		45A484701B33D51F002821BC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 45A4846F1B33D51F002821BC /* Assets.xcassets */; };
+		45A484731B33D51F002821BC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45A484711B33D51F002821BC /* LaunchScreen.storyboard */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		45A484611B33D51E002821BC /* Planetoid.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Planetoid.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		45A484641B33D51E002821BC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		45A484661B33D51E002821BC /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
+		45A484681B33D51F002821BC /* Level1Scene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Level1Scene.swift; sourceTree = "<group>"; };
+		45A4846A1B33D51F002821BC /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
+		45A4846D1B33D51F002821BC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		45A4846F1B33D51F002821BC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		45A484721B33D51F002821BC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		45A484741B33D51F002821BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		45A4845E1B33D51E002821BC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		45A484581B33D51E002821BC = {
+			isa = PBXGroup;
+			children = (
+				45A484631B33D51E002821BC /* Planetoid */,
+				45A484621B33D51E002821BC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		45A484621B33D51E002821BC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				45A484611B33D51E002821BC /* Planetoid.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		45A484631B33D51E002821BC /* Planetoid */ = {
+			isa = PBXGroup;
+			children = (
+				45A484641B33D51E002821BC /* AppDelegate.swift */,
+				45A484661B33D51E002821BC /* GameScene.sks */,
+				45A484681B33D51F002821BC /* Level1Scene.swift */,
+				45A4846A1B33D51F002821BC /* GameViewController.swift */,
+				45A4846C1B33D51F002821BC /* Main.storyboard */,
+				45A484711B33D51F002821BC /* LaunchScreen.storyboard */,
+				45A4846F1B33D51F002821BC /* Assets.xcassets */,
+				45A484741B33D51F002821BC /* Info.plist */,
+			);
+			path = Planetoid;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		45A484601B33D51E002821BC /* Planetoid */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 45A484771B33D51F002821BC /* Build configuration list for PBXNativeTarget "Planetoid" */;
+			buildPhases = (
+				45A4845D1B33D51E002821BC /* Sources */,
+				45A4845E1B33D51E002821BC /* Frameworks */,
+				45A4845F1B33D51E002821BC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Planetoid;
+			productName = Planetoid;
+			productReference = 45A484611B33D51E002821BC /* Planetoid.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		45A484591B33D51E002821BC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0700;
+				ORGANIZATIONNAME = Ruben;
+				TargetAttributes = {
+					45A484601B33D51E002821BC = {
+						CreatedOnToolsVersion = 7.0;
+						DevelopmentTeam = FG7AYYTX96;
+					};
+				};
+			};
+			buildConfigurationList = 45A4845C1B33D51E002821BC /* Build configuration list for PBXProject "Planetoid" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 45A484581B33D51E002821BC;
+			productRefGroup = 45A484621B33D51E002821BC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				45A484601B33D51E002821BC /* Planetoid */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		45A4845F1B33D51E002821BC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				45A484671B33D51E002821BC /* GameScene.sks in Resources */,
+				45A484731B33D51F002821BC /* LaunchScreen.storyboard in Resources */,
+				45A484701B33D51F002821BC /* Assets.xcassets in Resources */,
+				45A4846E1B33D51F002821BC /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		45A4845D1B33D51E002821BC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				45A484691B33D51F002821BC /* Level1Scene.swift in Sources */,
+				45A4846B1B33D51F002821BC /* GameViewController.swift in Sources */,
+				45A484651B33D51E002821BC /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		45A4846C1B33D51F002821BC /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				45A4846D1B33D51F002821BC /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		45A484711B33D51F002821BC /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				45A484721B33D51F002821BC /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		45A484751B33D51F002821BC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		45A484761B33D51F002821BC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		45A484781B33D51F002821BC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Planetoid/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = codes.ruben.Planetoid;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		45A484791B33D51F002821BC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Planetoid/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = codes.ruben.Planetoid;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		45A4845C1B33D51E002821BC /* Build configuration list for PBXProject "Planetoid" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				45A484751B33D51F002821BC /* Debug */,
+				45A484761B33D51F002821BC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		45A484771B33D51F002821BC /* Build configuration list for PBXNativeTarget "Planetoid" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				45A484781B33D51F002821BC /* Debug */,
+				45A484791B33D51F002821BC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 45A484591B33D51E002821BC /* Project object */;
+}
