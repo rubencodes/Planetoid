@@ -11,11 +11,13 @@ import CoreMotion
 
 class Level1Scene: SKScene, SKPhysicsContactDelegate {
     let motionManager: CMMotionManager = CMMotionManager()
-    let kCometName = "comet"
+    let kAsteroidName = "asteroid"
     let kPlutoName = "pluto"
+    let kStarName  = "star"
     let kExplodedName = "exploded"
-    let kScoreName = "score"
-    let kCometCount = 120
+    let kScoreName  = "score"
+    let kAsteroidCount = 220
+    let kStarCount  = 20
     let kPlutoBaseline = 20
     var levelDelegate : LevelDelegate?
     var initialState : Double?
@@ -31,7 +33,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         userInteractionEnabled = true
         physicsWorld.contactDelegate = self
         
-        //set up planet, comets, and HUD
+        //set up planet, asteroids, and HUD
         setupScene()
         
         //start watching the accelerometer
@@ -47,15 +49,23 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
             let nodes     = [contact.bodyA.node!, contact.bodyB.node!]
             let nodeNames = [contact.bodyA.node!.name!, contact.bodyB.node!.name!]
             
-            if nodeNames.contains(kPlutoName) && nodeNames.contains(kCometName) {
-                let node = nodes[nodeNames.indexOf(kCometName)!]
+            if nodeNames.contains(kPlutoName) && nodeNames.contains(kAsteroidName) {
+                let node = nodes[nodeNames.indexOf(kAsteroidName)!]
                 (node as! SKSpriteNode).texture = SKTexture(imageNamed: "Explosion")
                 node.name = kExplodedName
                 node.physicsBody!.dynamic = false
                 let currentPoints = levelDelegate!.pointsLost(-5)
                 
-                let scoreLabel = self.childNodeWithName(kScoreName) as! SKLabelNode
-                scoreLabel.text = "Health \(currentPoints)%"
+                updateScore(currentPoints)
+            }
+            
+            if nodeNames.contains(kPlutoName) && nodeNames.contains(kStarName) {
+                let node = nodes[nodeNames.indexOf(kStarName)!]
+                node.removeFromParent()
+                
+                let currentPoints = levelDelegate!.pointsGained(5)
+                
+                updateScore(currentPoints)
             }
         }
     }
@@ -67,8 +77,8 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         //update pluto according to accelerometer
         processUserMotionForUpdate(currentTime)
         
-        //move comets
-        moveCometsForUpdate()
+        //move asteroids
+        moveAsteroidsForUpdate()
     }
     
     //gets movement data from accelerometer and updates scene
@@ -93,22 +103,23 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         backgroundColor = UIColor(red: 0, green: 0, blue: 140/255, alpha: 1)
         
         setupPlayer() //setup pluto and add it to scene
-        setupComets() //setup comets and add to scene
+        setupAsteroids() //setup asteroids and add to scene
+        setupStars()  //setup stars
         setupHUD()    //setup heads-up display
     }
     
     func setupHUD() {
         //create health label
-        let scoreLabel = SKLabelNode(fontNamed: "Futura")
+        let scoreLabel = SKLabelNode(fontNamed: "Consolas")
         scoreLabel.name = kScoreName
         scoreLabel.fontSize = 25
-        scoreLabel.fontColor = SKColor.whiteColor()
-        scoreLabel.text = "Health 100%"
         scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Right
         scoreLabel.position = CGPoint(x: frame.size.width - 20, y: size.height - 40)
         
         //add label to scene
         addChild(scoreLabel)
+        
+        updateScore(100)
     }
     
     func setupPlayer() {
@@ -137,63 +148,121 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         self.addChild(pluto)
     }
     
-    func setupComets() {
-        //create kCometCount comets
-        for var i in 0...kCometCount {
-            //create a random comet (3 variations)
-            let comet = SKSpriteNode(imageNamed: "Comet-\(Int.random(min: 1, max: 3))")
-            comet.name = kCometName
+    func setupStars() {
+        //create kStarCount stars
+        for var i in 0...kStarCount {
+            //create a star
+            let star = SKSpriteNode(imageNamed: "Star")
+            star.name = kStarName
             
-            //generate a pseudo-random position (weighted towards end of scene)
+            //generate a pseudo-random position
             let sceneLength = CGRectGetMaxX(self.frame)*10
-            let cometPositionY = CGFloat.random(min: CGRectGetMinY(self.frame), max: CGRectGetMaxY(self.frame))
-            let cometPositionX = CGFloat.random(min: ((max(CGFloat(i)-20, 1))/CGFloat(kCometCount))*(sceneLength*0.9), max: sceneLength)
-            comet.position = CGPointMake(cometPositionX, cometPositionY)
+            let starPositionY = CGFloat.random(min: CGRectGetMinY(self.frame), max: CGRectGetMaxY(self.frame))
+            let starPositionX = CGFloat.random(min: (CGFloat(i)/CGFloat(kStarCount))*(sceneLength*0.9), max: sceneLength)
+            star.position = CGPointMake(starPositionX, starPositionY)
             
+            //fixed scale size
+            star.xScale = 0.10
+            star.yScale = 0.10
             
-            //size and rotate comet at random within bounds
-            let scale = CGFloat.random(min: 0.05, max: 0.15)
-            comet.xScale = scale
-            comet.yScale = scale
-            comet.zRotation = CGFloat.random(min: 0, max: 360)
+            //setup physics body to collide with asteroids, stars and pluto
+            star.physicsBody = SKPhysicsBody(circleOfRadius: star.frame.width/2)
+            star.physicsBody!.dynamic = true
+            star.physicsBody!.affectedByGravity = false
+            star.physicsBody!.mass = 0.02
+            star.physicsBody!.categoryBitMask = ColliderType.Stars.rawValue
+            star.physicsBody!.contactTestBitMask = ColliderType.Planet.rawValue
+            star.physicsBody!.collisionBitMask = ColliderType.Planet.rawValue
             
-            //setup physics body to collide with other comets and pluto
-            comet.physicsBody = SKPhysicsBody(circleOfRadius: comet.frame.width/2)
-            comet.physicsBody!.dynamic = true
-            comet.physicsBody!.affectedByGravity = false
-            comet.physicsBody!.mass = 0.02
-            comet.physicsBody!.categoryBitMask = ColliderType.Comets.rawValue
-            comet.physicsBody!.contactTestBitMask = ColliderType.Planet.rawValue
-            comet.physicsBody!.collisionBitMask = ColliderType.Planet.rawValue | ColliderType.Comets.rawValue
-            
-            //add comet to scene
-            self.addChild(comet)
+            //add star to scene
+            self.addChild(star)
         }
     }
     
-    //move comets forward at update loop
-    func moveCometsForUpdate() {
-        var cometsVisible = false //keep track of comets
-        
-        //loop over all comets
-        self.enumerateChildNodesWithName(kCometName) { node, stop in
-            //update their position
-            node.position = CGPointMake(node.position.x - 1, node.position.y)
+    func setupAsteroids() {
+        //create kAsteroidCount asteroids
+        var clearPath = (top : 0.45 as CGFloat, bottom: 0.55 as CGFloat)
+        for var i in 0...kAsteroidCount {
+            //create a random Asteroid (3 variations)
+            let asteroid = SKSpriteNode(imageNamed: "Asteroid-\(Int.random(min: 1, max: 3))")
+            asteroid.name = kAsteroidName
             
-            //check if comet is still visible
-            if node.position.x > CGRectGetMinX(self.frame) {
-                cometsVisible = true
+            //generate a pseudo-random position
+            let sceneLength = CGRectGetMaxX(self.frame)*10
+
+            //position asteroids on either side of path we keep clear
+            let asteroidPositionY = Bool.random()
+                ? CGFloat.random(min: CGRectGetMinY(self.frame), max: CGRectGetMaxY(self.frame)*clearPath.top) //position UP
+                : CGFloat.random(min: CGRectGetMaxY(self.frame)*clearPath.bottom, max: CGRectGetMaxY(self.frame)) //position DOWN
+            //update clearPath for next round
+            let shift = CGFloat.random(min: -0.1, max: 0.1)
+            
+            //bound path to top and bottom
+            if clearPath.top+shift <= 1 && clearPath.bottom >= 0 {
+                clearPath.top    += shift
+                clearPath.bottom += shift
+            } else if clearPath.top+shift <= 1 {
+                clearPath.top    = 0.1
+                clearPath.bottom = 0
+            } else {
+                clearPath.top    = 1
+                clearPath.bottom = 0.9
+            }
+            
+            //weighs X position towards end of scene so level gets harder
+            let asteroidPositionX = CGFloat.random(min: (CGFloat(i)/CGFloat(kAsteroidCount))*(sceneLength*0.9), max: sceneLength)
+            asteroid.position = CGPointMake(asteroidPositionX, asteroidPositionY)
+            
+            
+            //size and rotate asteroid at random within bounds
+            let scale = CGFloat.random(min: 0.05, max: 0.15)
+            asteroid.xScale = scale
+            asteroid.yScale = scale
+            asteroid.zRotation = CGFloat.random(min: 0, max: 360)
+            
+            //setup physics body to collide with other asteroids, stars and pluto
+            asteroid.physicsBody = SKPhysicsBody(circleOfRadius: asteroid.frame.width/2)
+            asteroid.physicsBody!.dynamic = true
+            asteroid.physicsBody!.affectedByGravity = false
+            asteroid.physicsBody!.mass = 0.02
+            asteroid.speed = CGFloat.random(min: 1.3, max: 1.5) //random speed, mostly for later use
+            asteroid.physicsBody!.categoryBitMask = ColliderType.Asteroids.rawValue
+            asteroid.physicsBody!.contactTestBitMask = ColliderType.Planet.rawValue
+            asteroid.physicsBody!.collisionBitMask = ColliderType.Planet.rawValue
+            
+            //add asteroid to scene
+            self.addChild(asteroid)
+        }
+    }
+    
+    //move asteroids forward at update loop
+    func moveAsteroidsForUpdate() {
+        var asteroidsVisible = false //keep track of asteroids
+        
+        //loop over all asteroids
+        self.enumerateChildNodesWithName(kAsteroidName) { node, stop in
+            //update their position
+            node.position = CGPointMake(node.position.x - (2 * node.speed), node.position.y)
+            
+            //check if asteroid is still visible
+            if node.position.x+node.frame.width > CGRectGetMinX(self.frame) {
+                asteroidsVisible = true
             }
         }
         
-        //if no comet was visible, raise flag for end of level
-        if !cometsVisible {
+        //if no asteroid was visible, raise flag for end of level
+        if !asteroidsVisible {
             self.levelDelegate?.endOfLevel()
         }
         
-        //loop over exploded comets and update their positions, too
+        //loop over exploded asteroids and update their positions, too
         self.enumerateChildNodesWithName(kExplodedName) { node, stop in
-            node.position = CGPointMake(node.position.x - 1, node.position.y)
+            node.position = CGPointMake(node.position.x - 2, node.position.y)
+        }
+        
+        //loop over stars and update their positions, too
+        self.enumerateChildNodesWithName(kStarName) { node, stop in
+            node.position = CGPointMake(node.position.x - 2, node.position.y)
         }
     }
     
@@ -205,17 +274,38 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         //            print(location)
         //        }
     }
+    
+    //change in score, update HUD label
+    func updateScore(currentPoints : Int) {
+        let scoreLabel = self.childNodeWithName(kScoreName) as! SKLabelNode
+        
+        let scoreCount = currentPoints/5
+        scoreLabel.text = String(count: scoreCount, repeatedValue: Character("|"))
+        
+        if scoreCount <= 5 {
+            scoreLabel.fontColor = SKColor.redColor()
+        } else if scoreCount <= 15 {
+            scoreLabel.fontColor = SKColor.yellowColor()
+        } else {
+            scoreLabel.fontColor = SKColor.greenColor()
+        }
+    }
 }
 
 //collision-capable objects
 enum ColliderType: UInt32 {
-    case Comets = 1
+    case Asteroids = 1
     case Walls  = 2
     case Planet = 4
+    case Stars  = 8
 }
 
 //generates random Ints and CGFloats
 public extension Int {
+    public static func random() -> Int {
+        return Int(arc4random())
+    }
+    
     public static func random(n: Int) -> Int {
         return Int(arc4random_uniform(UInt32(n)))
     }
@@ -232,5 +322,11 @@ public extension CGFloat {
     
     public static func random(min min: CGFloat, max: CGFloat) -> CGFloat {
         return CGFloat.random() * (max - min) + min
+    }
+}
+
+public extension Bool {
+    public static func random() -> Bool {
+        return round(CGFloat.random())%2 == 0
     }
 }
