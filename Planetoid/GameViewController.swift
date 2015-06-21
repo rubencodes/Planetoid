@@ -45,6 +45,9 @@ class GameViewController: UIViewController, LevelDelegate {
         let level = getLevel(currentLevel)
         currentScene = level
         
+        //reset the score
+        currentHealth = 100
+        
         // Configure the view.
         let skView = self.view as! SKView
         skView.showsFPS = true
@@ -86,7 +89,8 @@ class GameViewController: UIViewController, LevelDelegate {
         
         //if the user is out of points, it's game over.
         if currentHealth <= 0 {
-            currentScene?.view?.paused = true
+            gameOver()
+            
             return 0
         }
         
@@ -96,6 +100,7 @@ class GameViewController: UIViewController, LevelDelegate {
     //sent from scene, tells us user gained points
     func pointsGained(points: Int) -> Int {
         currentHealth += points
+        
         return currentHealth
     }
     
@@ -113,6 +118,18 @@ class GameViewController: UIViewController, LevelDelegate {
         let alert = UIAlertController(title: "Good job!", message: "You've survived this level!", preferredStyle: UIAlertControllerStyle.Alert)
         alert.addAction(UIAlertAction(title: "Continue", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
             //get the next level and store it
+            self.changeLevelTo(self.currentLevel)
+        }))
+        
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    func gameOver() {
+        currentScene?.view?.paused = true
+        
+        let alert = UIAlertController(title: "Game Over", message: "Better luck next time!", preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "Play Again?", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+            //change to current level
             self.changeLevelTo(self.currentLevel)
         }))
         
