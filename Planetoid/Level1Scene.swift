@@ -16,11 +16,11 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
     let kStarName  = "star"
     let kExplodedName = "exploded"
     let kScoreName  = "score"
-    let kAsteroidCount = 220
+    let kAsteroidCount = 160
     let kStarCount  = 20
     let kPlutoBaseline = 20
     var levelDelegate : LevelDelegate?
-    var initialState : Double?
+    var initialState : Double = -0.7
     
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
@@ -88,13 +88,8 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         
         //check if we have the accelerometer data
         if let data = motionManager.accelerometerData {
-            //set a baseline for the accelerometer
-            if self.initialState == nil {
-                self.initialState = data.acceleration.z
-            }
-            
             //move pluto according to its variation from the baseline
-            pluto.physicsBody!.applyForce(CGVectorMake(0, 20.0 * (CGFloat(self.initialState!) - CGFloat(data.acceleration.z))))
+            pluto.physicsBody!.applyForce(CGVectorMake(0, 20.0 * (CGFloat(self.initialState) - CGFloat(data.acceleration.z))))
         }
     }
     
@@ -150,7 +145,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
     
     func setupStars() {
         //create kStarCount stars
-        for var i in 0...kStarCount {
+        for i in 0...kStarCount {
             //create a star
             let star = SKSpriteNode(imageNamed: "Star")
             star.name = kStarName
@@ -182,7 +177,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
     func setupAsteroids() {
         //create kAsteroidCount asteroids
         var clearPath = (top : 0.45 as CGFloat, bottom: 0.55 as CGFloat)
-        for var i in 0...kAsteroidCount {
+        for i in 0...kAsteroidCount {
             //create a random Asteroid (3 variations)
             let asteroid = SKSpriteNode(imageNamed: "Asteroid-\(Int.random(min: 1, max: 3))")
             asteroid.name = kAsteroidName
