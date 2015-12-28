@@ -148,8 +148,28 @@
                     <view key="view" contentMode="scaleToFill" id="3se-qz-xqx" customClass="SKView">
                         <rect key="frame" x="0.0" y="0.0" width="568" height="320"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yel-Qq-i4P">
+                                <rect key="frame" x="515" y="267" width="40" height="45"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="nAo-Sj-YoA"/>
+                                    <constraint firstAttribute="height" constant="45" id="ofp-Ni-r7L"/>
+                                </constraints>
+                                <state key="normal" image="Pause"/>
+                                <connections>
+                                    <action selector="togglePause" destination="BV1-FR-VrT" eventType="touchUpInside" id="mME-iX-9sq"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="trailingMargin" secondItem="Yel-Qq-i4P" secondAttribute="trailing" constant="-7" id="NrG-Ug-JO5"/>
+                            <constraint firstItem="qHh-Mt-9TT" firstAttribute="top" secondItem="Yel-Qq-i4P" secondAttribute="bottom" constant="8" id="YTG-NJ-KVO"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="playPauseButton" destination="Yel-Qq-i4P" id="qTG-pf-yop"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>
             </objects>
@@ -158,6 +178,7 @@
     </scenes>
     <resources>
         <image name="CONTINUE Button" width="289" height="86"/>
+        <image name="Pause" width="80" height="90"/>
         <image name="Pluto-Forward" width="333" height="333"/>
         <image name="START Button" width="333" height="170"/>
     </resources>

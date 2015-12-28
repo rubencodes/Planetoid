@@ -17,6 +17,8 @@ class GameViewController: UIViewController, LevelDelegate {
     var currentScene : SKScene?
     var currentLevel = 1
     var scoreTimer : NSTimer?
+    var state : GameState = .Play
+    @IBOutlet var playPauseButton : UIButton?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -138,6 +140,32 @@ class GameViewController: UIViewController, LevelDelegate {
         
         self.presentViewController(alert, animated: true, completion: nil)
     }
+    
+    func pause() {
+        self.state = .Pause
+        self.playPauseButton?.setImage(UIImage(named: "Play"), forState: UIControlState.Normal)
+        currentScene?.view?.paused = true
+        scoreTimer?.invalidate()
+    }
+    
+    func play() {
+        self.state = .Play
+        self.playPauseButton?.setImage(UIImage(named: "Pause"), forState: UIControlState.Normal)
+        currentScene?.view?.paused = false
+        startScoreTimer()
+    }
+    
+    @IBAction func togglePause() {
+        if self.state == .Play {
+            self.pause()
+        } else {
+            self.play()
+        }
+    }
+}
+
+enum GameState {
+    case Play, Pause
 }
 
 protocol LevelDelegate {

@@ -8,6 +8,7 @@
 
 import SpriteKit
 import CoreMotion
+import Foundation
 
 class Level1Scene: SKScene, SKPhysicsContactDelegate {
     let motionManager: CMMotionManager = CMMotionManager()
@@ -20,7 +21,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
     
     let kStarCount     = 20
     let kStarPerLevelFactor = 5
-    let kAsteroidCount = 80
+    let kAsteroidCount = 120
     let kAsteroidPerLevelFactor = 20
     let kPlutoBaseline = 20
     
@@ -80,6 +81,9 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
             if node.position.x+node.frame.width > CGRectGetMinX(self.frame) {
                 asteroidsVisible = true
             }
+            
+            let rotateAsteroid = SKAction.rotateByAngle(CGFloat(M_PI_4)/32, duration: 0)
+            node.runAction(rotateAsteroid)
         }
         
         //if no asteroid was visible, raise flag for end of level
@@ -127,11 +131,19 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         /* Called when a touch begins */
-        
-        //        for touch in touches {
-        //            let location = touch.locationInNode(self)
-        //            print(location)
-        //        }
+//        
+//        for touch in touches {
+//            let location = touch.locationInNode(self)
+//            print(location)
+//            self.enumerateChildNodesWithName(kAsteroidName) { node, stop in
+//                //update their position
+//                node.position = CGPointMake(node.position.x - (2 * node.speed), node.position.y)
+//                
+//                if(node.containsPoint(location)) {
+//                    
+//                }
+//            }
+//        }
     }
     
     func setupScene() {
@@ -185,7 +197,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         lifeLabel.name = kLifeName
         lifeLabel.fontSize = 25
         lifeLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Right
-        lifeLabel.position = CGPoint(x: frame.size.width - 20, y: size.height - 40)
+        lifeLabel.position = CGPoint(x: frame.size.width - 10, y: size.height - 40)
         lifeLabel.zPosition = 3
         
         //add label to scene
@@ -193,11 +205,11 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         updateLifeLevel((self.levelDelegate?.getHealth())!)
         
         //create score label
-        let scoreLabel = SKLabelNode(fontNamed: "Consolas")
+        let scoreLabel = SKLabelNode(fontNamed: "CourierNewPS-BoldMT")
         scoreLabel.name = kScoreName
         scoreLabel.fontSize = 25
         scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Left
-        scoreLabel.position = CGPoint(x: 20, y: size.height - 40)
+        scoreLabel.position = CGPoint(x: 10, y: size.height - 40)
         scoreLabel.zPosition = 3
         
         //add label to scene
@@ -339,7 +351,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
     func updateScoreLevel(currentScore : Int) {
         let scoreLabel = self.childNodeWithName(kScoreName) as! SKLabelNode
         
-        scoreLabel.text = "\(currentScore)"
+        scoreLabel.text = String(format: "%05d", currentScore)
         scoreLabel.fontColor = SKColor.greenColor()
     }
     
