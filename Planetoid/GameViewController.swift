@@ -10,55 +10,43 @@ import UIKit
 import SpriteKit
 
 class GameViewController: UIViewController, LevelDelegate {
-    var currentHealth = 100
+    let kInitialHealthValue = 20
+    let kInitialScoreValue  = 0
+    var currentHealth = 20
+    var currentScore  = 0
     var currentScene : SKScene?
     var currentLevel = 1
+    var scoreTimer : NSTimer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        //gets the current level from storage
-        let currentLevel = min(NSUserDefaults.standardUserDefaults().integerForKey("currentLevel"), 1)
         
         //loads current level
         changeLevelTo(currentLevel)
     }
     
     //returns level scene for a given integer level number
-    func getLevel(level : Int) -> SKScene {
-        let levelScene : SKScene
-        switch level {
-        case 0...1:
-            levelScene = Level1Scene(size: self.view.frame.size) as SKScene
-            (levelScene as! Level1Scene).levelDelegate = self
-        default:
-            levelScene = Level1Scene(size: self.view.frame.size) as SKScene
-            (levelScene as! Level1Scene).levelDelegate = self
-            break
-        }
-        
-        return levelScene
+    func getLevel() -> Int {
+        return currentLevel
     }
     
     //changes presented scene to a given integer level
     func changeLevelTo(level : Int) {
-        let level = getLevel(currentLevel)
-        currentScene = level
+        currentScene = Level1Scene(size: self.view.frame.size) as SKScene
+        (currentScene as! Level1Scene).levelDelegate = self
         
         //reset the score
-        currentHealth = 100
+        currentHealth = kInitialHealthValue
         
         // Configure the view.
         let skView = self.view as! SKView
-        skView.showsFPS = true
-        skView.showsNodeCount = true
         
         /* Sprite Kit applies additional optimizations to improve rendering performance */
         skView.ignoresSiblingOrder = true
         
         /* Set the scale mode to scale to fit the window */
-        level.scaleMode = .AspectFill
-        skView.presentScene(level)
+        currentScene!.scaleMode = .AspectFill
+        skView.presentScene(currentScene!)
         skView.paused = false
     }
     
@@ -67,11 +55,7 @@ class GameViewController: UIViewController, LevelDelegate {
     }
     
     override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
-        if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
-            return .Landscape
-        } else {
-            return .All
-        }
+        return .Landscape
     }
     
     override func didReceiveMemoryWarning() {
@@ -83,52 +67,71 @@ class GameViewController: UIViewController, LevelDelegate {
         return true
     }
     
+    //begin tracking the score
+    func startScoreTimer() {
+        scoreTimer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: Selector("score"), userInfo: nil, repeats: true)
+    }
+    
+    func score() {
+        ++currentScore
+        
+        NSNotificationCenter.defaultCenter().postNotificationName("ScoreChangedNotification", object: currentScore)
+    }
+
+    //sent from scene, tells us user gained points
+    func lifeGained() -> Int {
+        return ++currentHealth
+    }
+    
     //sent from scene, tells us user lost points
-    func pointsLost(points: Int) -> Int {
-        currentHealth += points
+    func lifeLost() -> Int {
+        currentHealth = max(--currentHealth, 0)
         
         //if the user is out of points, it's game over.
-        if currentHealth <= 0 {
-            gameOver()
-            
-            return 0
+        if currentHealth == 0 {
+            self.levelFailed()
         }
         
         return currentHealth
     }
     
-    //sent from scene, tells us user gained points
-    func pointsGained(points: Int) -> Int {
-        currentHealth += points
-        
+    //get current health
+    func getHealth() -> Int {
         return currentHealth
     }
     
-    func endOfLevel() {
-        //pause the current level and update what level we're on
-        currentScene?.view?.paused = true
+    //get current score
+    func getScore() -> Int {
+        return currentScore
+    }
+
+    //finished level successfully
+    func levelSucceeded() {
         currentLevel++
         
-        //store out progress
-        let defaults = NSUserDefaults.standardUserDefaults()
-        defaults.setInteger(currentLevel, forKey: "currentLevel")
-        defaults.synchronize()
-        
-        //ask the user before continuing to the next level
-        let alert = UIAlertController(title: "Good job!", message: "You've survived this level!", preferredStyle: UIAlertControllerStyle.Alert)
-        alert.addAction(UIAlertAction(title: "Continue", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
-            //get the next level and store it
-            self.changeLevelTo(self.currentLevel)
-        }))
-        
-        self.presentViewController(alert, animated: true, completion: nil)
+        self.presentLevelTransition(title: "Stellar!",
+            message: "Pluto survived this round with \(currentScore) points!",
+            optionTitle: "Continue")
     }
     
-    func gameOver() {
-        currentScene?.view?.paused = true
+    //gameover
+    func levelFailed() {
+        currentLevel = 0
+        currentScore = kInitialScoreValue
         
-        let alert = UIAlertController(title: "Game Over", message: "Better luck next time!", preferredStyle: UIAlertControllerStyle.Alert)
-        alert.addAction(UIAlertAction(title: "Play Again?", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+        self.presentLevelTransition(title: "Bummer",
+            message: "You couldn't make it past this wave of asteroids. Better luck next time!",
+            optionTitle: "Try Again")
+    }
+    
+    //option to transition between levels
+    func presentLevelTransition(title title: String, message: String, optionTitle: String) {
+        currentScene?.view?.paused = true
+        scoreTimer?.invalidate()
+        
+        //ask the user before continuing
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: optionTitle, style: UIAlertActionStyle.Default, handler: { (action) -> Void in
             //change to current level
             self.changeLevelTo(self.currentLevel)
         }))
@@ -138,7 +141,13 @@ class GameViewController: UIViewController, LevelDelegate {
 }
 
 protocol LevelDelegate {
-    func pointsLost(points : Int) -> Int
-    func pointsGained(points : Int) -> Int
-    func endOfLevel()
+    func startScoreTimer()
+    func lifeLost() -> Int
+    func lifeGained() -> Int
+    
+    func getScore() -> Int
+    func getHealth() -> Int
+    func getLevel() -> Int
+    
+    func levelSucceeded()
 }
