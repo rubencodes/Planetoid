@@ -22,7 +22,7 @@ class GameViewController: UIViewController, LevelDelegate {
         super.viewDidLoad()
         
         //loads current level
-        changeLevelTo(currentLevel)
+        loadLevel(currentLevel)
     }
     
     //returns level scene for a given integer level number
@@ -31,7 +31,7 @@ class GameViewController: UIViewController, LevelDelegate {
     }
     
     //changes presented scene to a given integer level
-    func changeLevelTo(level : Int) {
+    func loadLevel(level : Int) {
         currentScene = Level1Scene(size: self.view.frame.size) as SKScene
         (currentScene as! Level1Scene).levelDelegate = self
         
@@ -133,7 +133,7 @@ class GameViewController: UIViewController, LevelDelegate {
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
         alert.addAction(UIAlertAction(title: optionTitle, style: UIAlertActionStyle.Default, handler: { (action) -> Void in
             //change to current level
-            self.changeLevelTo(self.currentLevel)
+            self.loadLevel(self.currentLevel)
         }))
         
         self.presentViewController(alert, animated: true, completion: nil)

@@ -138,12 +138,33 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         let currentLevel = (self.levelDelegate?.getLevel())! as Int
         
         setupFrame() //setup level frame
+        setupBackground()
         setupPlayer() //setup pluto and add it to scene
         setupAsteroids(kAsteroidCount + (kAsteroidPerLevelFactor * currentLevel)) //setup obstacles
         setupStars(kStarCount + (kStarPerLevelFactor * currentLevel)) //setup stars
         setupHUD() //setup heads-up display
         
         self.levelDelegate?.startScoreTimer()
+    }
+    
+    func setupBackground() {
+        let backgroundTexture = SKTexture(imageNamed: "background")
+        
+        //move background right to left; replace
+        let shiftBackground = SKAction.moveByX(-backgroundTexture.size().width, y: 0, duration: 80)
+        let replaceBackground = SKAction.moveByX(backgroundTexture.size().width, y:0, duration: 0)
+        let movingAndReplacingBackground = SKAction.repeatActionForever(SKAction.sequence([shiftBackground,replaceBackground]))
+        
+        for var i:CGFloat = 0; i<3; i++ {
+            //defining background; giving it height and moving width
+            let background = SKSpriteNode(texture:backgroundTexture)
+            background.zPosition = 0
+            background.position = CGPoint(x: backgroundTexture.size().width/2 + (backgroundTexture.size().width * i), y: CGRectGetMidY(self.frame))
+            background.size.height = self.frame.height
+            background.runAction(movingAndReplacingBackground)
+            
+            self.addChild(background)
+        }
     }
     
     func setupFrame() {
@@ -165,6 +186,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         lifeLabel.fontSize = 25
         lifeLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Right
         lifeLabel.position = CGPoint(x: frame.size.width - 20, y: size.height - 40)
+        lifeLabel.zPosition = 3
         
         //add label to scene
         addChild(lifeLabel)
@@ -176,6 +198,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         scoreLabel.fontSize = 25
         scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Left
         scoreLabel.position = CGPoint(x: 20, y: size.height - 40)
+        scoreLabel.zPosition = 3
         
         //add label to scene
         addChild(scoreLabel)
@@ -203,6 +226,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         pluto.physicsBody!.allowsRotation = false
         pluto.physicsBody!.categoryBitMask = ColliderType.Planet.rawValue
         pluto.physicsBody!.collisionBitMask = ColliderType.Walls.rawValue
+        pluto.zPosition = 2
         
         //add pluto to scene
         self.addChild(pluto)
@@ -233,6 +257,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
             star.physicsBody!.categoryBitMask    = ColliderType.Stars.rawValue
             star.physicsBody!.contactTestBitMask = ColliderType.Planet.rawValue
             star.physicsBody!.collisionBitMask   = ColliderType.Planet.rawValue
+            star.zPosition = 1
             
             //add star to scene
             self.addChild(star)
@@ -273,7 +298,6 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
             let asteroidPositionX = CGFloat.random(min: (CGFloat(i)/CGFloat(asteroidCount))*(sceneLength*0.9), max: sceneLength)
             asteroid.position = CGPointMake(asteroidPositionX, asteroidPositionY)
             
-            
             //size and rotate asteroid at random within bounds
             let scale = CGFloat.random(min: 0.05, max: 0.15)
             asteroid.xScale = scale
@@ -289,6 +313,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
             asteroid.physicsBody!.categoryBitMask    = ColliderType.Asteroids.rawValue
             asteroid.physicsBody!.contactTestBitMask = ColliderType.Planet.rawValue
             asteroid.physicsBody!.collisionBitMask   = ColliderType.Planet.rawValue
+            asteroid.zPosition = 1
             
             //add asteroid to scene
             self.addChild(asteroid)
@@ -318,6 +343,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         scoreLabel.fontColor = SKColor.greenColor()
     }
     
+    //receives notification of updated score
     func receiveUpdatedScore(notification: NSNotification) {
         guard let score = notification.object else {
             return
