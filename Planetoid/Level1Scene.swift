@@ -88,6 +88,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         
         //if no asteroid was visible, raise flag for end of level
         if !asteroidsVisible {
+//            self.playLevelUpSound()
             self.levelDelegate?.levelSucceeded()
         }
         
@@ -113,18 +114,24 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
                 (node as! SKSpriteNode).texture = SKTexture(imageNamed: "Explosion")
                 node.name = kExplodedName
                 node.physicsBody!.dynamic = false
-                let currentLifeLevel = levelDelegate!.lifeLost()
                 
+                let currentLifeLevel = levelDelegate!.lifeLost(1)
                 updateLifeLevel(currentLifeLevel)
+                
+                playExplosionSound()
             }
             
             if nodeNames.contains(kPlutoName) && nodeNames.contains(kStarName) {
                 let node = nodes[nodeNames.indexOf(kStarName)!]
                 node.removeFromParent()
                 
-                let currentLifeLevel = levelDelegate!.lifeGained()
-                
+                let currentLifeLevel = levelDelegate!.lifeGained(1)
                 updateLifeLevel(currentLifeLevel)
+                
+                let currentScore = levelDelegate!.pointsGained(10)
+                updateScoreLevel(currentScore)
+                
+                playStarSound()
             }
         }
     }
@@ -343,7 +350,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         } else if currentLifeLevel <= 10 {
             lifeLabel.fontColor = SKColor.yellowColor()
         } else {
-            lifeLabel.fontColor = SKColor.greenColor()
+            lifeLabel.fontColor = SKColor.init(red: 1, green: 1, blue: 1, alpha: 0.69)
         }
     }
     
@@ -352,7 +359,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         let scoreLabel = self.childNodeWithName(kScoreName) as! SKLabelNode
         
         scoreLabel.text = String(format: "%05d", currentScore)
-        scoreLabel.fontColor = SKColor.greenColor()
+        scoreLabel.fontColor = SKColor.init(red: 1, green: 1, blue: 1, alpha: 0.69)
     }
     
     //receives notification of updated score
@@ -363,6 +370,30 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         
         let currentScore = score as! Int
         updateScoreLevel(currentScore)
+    }
+    
+    //plays explosion sound effect
+    func playExplosionSound() {
+        playSoundFromArray(["b1.mp3", "b2.mp3", "b3.mp3", "b4.mp3"])
+    }
+    
+    //plays star sound effect
+    func playStarSound() {
+        playSoundFromArray(["l1.mp3"])
+    }
+    
+    //plays star sound effect
+    func playLevelUpSound() {
+        playSoundFromArray(["a1.mp3"])
+    }
+    
+    func playSoundFromArray(soundArray : [String]) {
+        let selectedFileName = soundArray[Int.random(min: 0, max: soundArray.count-1)]
+        
+        let backgroundThread = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+        dispatch_async(backgroundThread) { () -> Void in
+            self.runAction(SKAction.playSoundFileNamed(selectedFileName, waitForCompletion: false))
+        }
     }
 }
 

@@ -21,7 +21,7 @@
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="f7I-4g-9Iw">
                                 <rect key="frame" x="34" y="87" width="500" height="100"/>
                                 <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <string key="text">Pluto the Planetoid needs your help to become a planet again! Help Pluto navigate between the asteroids so he can show the other planets his skill. Tilt your phone back and forth to move up and down between the asteroids.</string>
+                                <string key="text">Pluto the Planetoid needs your help to become a planet again! Help Pluto navigate between the asteroids so he can show the other planets his skill. Tilt your phone back and forth to move up and down between the asteroids. Catch stars for good luck and extra points.</string>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -180,6 +180,6 @@
         <image name="CONTINUE Button" width="289" height="86"/>
         <image name="Pause" width="80" height="90"/>
         <image name="Pluto-Forward" width="333" height="333"/>
-        <image name="START Button" width="333" height="170"/>
+        <image name="START Button" width="167" height="85"/>
     </resources>
 </document>

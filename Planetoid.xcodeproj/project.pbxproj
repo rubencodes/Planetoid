@@ -14,6 +14,12 @@
 		45A4846E1B33D51F002821BC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45A4846C1B33D51F002821BC /* Main.storyboard */; };
 		45A484701B33D51F002821BC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 45A4846F1B33D51F002821BC /* Assets.xcassets */; };
 		45A484731B33D51F002821BC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45A484711B33D51F002821BC /* LaunchScreen.storyboard */; };
+		45DD7BA81C323A8C0069A665 /* b1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 45DD7BA41C323A8C0069A665 /* b1.mp3 */; };
+		45DD7BA91C323A8C0069A665 /* b2.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 45DD7BA51C323A8C0069A665 /* b2.mp3 */; };
+		45DD7BAA1C323A8C0069A665 /* b3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 45DD7BA61C323A8C0069A665 /* b3.mp3 */; };
+		45DD7BAB1C323A8C0069A665 /* b4.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 45DD7BA71C323A8C0069A665 /* b4.mp3 */; };
+		45DD7BAE1C323DBF0069A665 /* l1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 45DD7BAD1C323DBF0069A665 /* l1.mp3 */; };
+		45DD7BB61C3244130069A665 /* a1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 45DD7BB51C3244130069A665 /* a1.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +32,12 @@
 		45A4846F1B33D51F002821BC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		45A484721B33D51F002821BC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		45A484741B33D51F002821BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		45DD7BA41C323A8C0069A665 /* b1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = b1.mp3; path = ../../../../../Downloads/b1.mp3; sourceTree = "<group>"; };
+		45DD7BA51C323A8C0069A665 /* b2.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = b2.mp3; path = ../../../../../Downloads/b2.mp3; sourceTree = "<group>"; };
+		45DD7BA61C323A8C0069A665 /* b3.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = b3.mp3; path = ../../../../../Downloads/b3.mp3; sourceTree = "<group>"; };
+		45DD7BA71C323A8C0069A665 /* b4.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = b4.mp3; path = ../../../../../Downloads/b4.mp3; sourceTree = "<group>"; };
+		45DD7BAD1C323DBF0069A665 /* l1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = l1.mp3; path = ../../../../../Downloads/l1.mp3; sourceTree = "<group>"; };
+		45DD7BB51C3244130069A665 /* a1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = a1.mp3; path = ../../../../../Downloads/a1.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,10 +76,48 @@
 				45A4846A1B33D51F002821BC /* GameViewController.swift */,
 				45A4846C1B33D51F002821BC /* Main.storyboard */,
 				45A484711B33D51F002821BC /* LaunchScreen.storyboard */,
+				45DD7BB11C323DE30069A665 /* Sounds */,
 				45A4846F1B33D51F002821BC /* Assets.xcassets */,
 				45A484741B33D51F002821BC /* Info.plist */,
 			);
 			path = Planetoid;
+			sourceTree = "<group>";
+		};
+		45DD7BAC1C323A930069A665 /* Explosion Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				45DD7BA41C323A8C0069A665 /* b1.mp3 */,
+				45DD7BA51C323A8C0069A665 /* b2.mp3 */,
+				45DD7BA61C323A8C0069A665 /* b3.mp3 */,
+				45DD7BA71C323A8C0069A665 /* b4.mp3 */,
+			);
+			name = "Explosion Sounds";
+			sourceTree = "<group>";
+		};
+		45DD7BAF1C323DC40069A665 /* Star Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				45DD7BAD1C323DBF0069A665 /* l1.mp3 */,
+			);
+			name = "Star Sounds";
+			sourceTree = "<group>";
+		};
+		45DD7BB11C323DE30069A665 /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				45DD7BB21C3240C30069A665 /* Etc */,
+				45DD7BAF1C323DC40069A665 /* Star Sounds */,
+				45DD7BAC1C323A930069A665 /* Explosion Sounds */,
+			);
+			name = Sounds;
+			sourceTree = "<group>";
+		};
+		45DD7BB21C3240C30069A665 /* Etc */ = {
+			isa = PBXGroup;
+			children = (
+				45DD7BB51C3244130069A665 /* a1.mp3 */,
+			);
+			name = Etc;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -128,9 +178,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				45DD7BB61C3244130069A665 /* a1.mp3 in Resources */,
+				45DD7BA81C323A8C0069A665 /* b1.mp3 in Resources */,
 				45A484671B33D51E002821BC /* GameScene.sks in Resources */,
+				45DD7BAB1C323A8C0069A665 /* b4.mp3 in Resources */,
 				45A484731B33D51F002821BC /* LaunchScreen.storyboard in Resources */,
+				45DD7BAA1C323A8C0069A665 /* b3.mp3 in Resources */,
 				45A484701B33D51F002821BC /* Assets.xcassets in Resources */,
+				45DD7BAE1C323DBF0069A665 /* l1.mp3 in Resources */,
+				45DD7BA91C323A8C0069A665 /* b2.mp3 in Resources */,
 				45A4846E1B33D51F002821BC /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -296,6 +352,7 @@
 				45A484791B33D51F002821BC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

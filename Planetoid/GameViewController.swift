@@ -79,15 +79,22 @@ class GameViewController: UIViewController, LevelDelegate {
         
         NSNotificationCenter.defaultCenter().postNotificationName("ScoreChangedNotification", object: currentScore)
     }
-
+    
     //sent from scene, tells us user gained points
-    func lifeGained() -> Int {
-        return ++currentHealth
+    func pointsGained(amount : Int?) -> Int {
+        currentScore += amount != nil ? amount! : 1
+        return currentScore
+    }
+
+    //sent from scene, tells us user gained life points
+    func lifeGained(amount : Int?) -> Int {
+        currentHealth += amount != nil ? amount! : 1
+        return currentHealth
     }
     
-    //sent from scene, tells us user lost points
-    func lifeLost() -> Int {
-        currentHealth = max(--currentHealth, 0)
+    //sent from scene, tells us user lost life points
+    func lifeLost(amount : Int?) -> Int {
+        currentHealth = max(amount != nil ? currentHealth-amount! : currentHealth-1, 0)
         
         //if the user is out of points, it's game over.
         if currentHealth == 0 {
@@ -122,7 +129,7 @@ class GameViewController: UIViewController, LevelDelegate {
         currentScore = kInitialScoreValue
         
         self.presentLevelTransition(title: "Bummer",
-            message: "You couldn't make it past this wave of asteroids. Better luck next time!",
+            message: "You couldn't make it past this wave of asteroids. Better luck next time! Score: \(currentScore)",
             optionTitle: "Try Again")
     }
     
@@ -170,8 +177,9 @@ enum GameState {
 
 protocol LevelDelegate {
     func startScoreTimer()
-    func lifeLost() -> Int
-    func lifeGained() -> Int
+    func lifeLost(amount : Int?) -> Int
+    func lifeGained(amount : Int?) -> Int
+    func pointsGained(amount : Int?) -> Int
     
     func getScore() -> Int
     func getHealth() -> Int
