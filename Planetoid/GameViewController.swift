@@ -116,21 +116,24 @@ class GameViewController: UIViewController, LevelDelegate {
 
     //finished level successfully
     func levelSucceeded() {
-        currentLevel++
+        let titles = ["Stellar!", "Rock-star!", "Out of this World!"]
+        let titleIndex = Int.random(min: 0, max: titles.count)
         
-        self.presentLevelTransition(title: "Stellar!",
+        self.presentLevelTransition(title: titles[titleIndex],
             message: "Pluto survived this round with \(currentScore) points!",
             optionTitle: "Continue")
+        
+        currentLevel++
     }
     
     //gameover
     func levelFailed() {
-        currentLevel = 0
-        currentScore = kInitialScoreValue
-        
         self.presentLevelTransition(title: "Bummer",
-            message: "You couldn't make it past this wave of asteroids. Better luck next time! Score: \(currentScore)",
+            message: "You couldn't make it past this wave of asteroids. Better luck next time! Score: \(currentScore), Level: \(currentLevel)",
             optionTitle: "Try Again")
+        
+        currentLevel = 1
+        currentScore = kInitialScoreValue
     }
     
     //option to transition between levels
