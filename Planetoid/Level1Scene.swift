@@ -9,6 +9,7 @@
 import SpriteKit
 import CoreMotion
 import Foundation
+import AVFoundation
 
 class Level1Scene: SKScene, SKPhysicsContactDelegate {
     let motionManager: CMMotionManager = CMMotionManager()
@@ -118,7 +119,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
                 let currentLifeLevel = levelDelegate!.lifeLost(1)
                 updateLifeLevel(currentLifeLevel)
                 
-                playExplosionSound()
+                playExplosionSound(volume: node.xScale)
             }
             
             if nodeNames.contains(kPlutoName) && nodeNames.contains(kStarName) {
@@ -373,26 +374,43 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
     }
     
     //plays explosion sound effect
-    func playExplosionSound() {
-        playSoundFromArray(["b1.mp3", "b2.mp3", "b3.mp3", "b4.mp3"])
+    func playExplosionSound(volume volume: CGFloat) {
+        let transformedVolume = Float((volume - 0.04) * 10)
+        playSoundFromArray(["b1.mp3", "b2.mp3", "b3.mp3", "b4.mp3"], volume: transformedVolume)
     }
     
     //plays star sound effect
     func playStarSound() {
-        playSoundFromArray(["l1.mp3"])
+        playSoundFromArray(["l1.mp3"], volume: 0.5)
     }
     
     //plays star sound effect
     func playLevelUpSound() {
-        playSoundFromArray(["a1.mp3"])
+        playSoundFromArray(["a1.mp3"], volume: 0.5)
     }
     
-    func playSoundFromArray(soundArray : [String]) {
+    func playSoundFromArray(soundArray : [String], volume: Float) {
         let selectedFileName = soundArray[Int.random(min: 0, max: soundArray.count-1)]
         
         let backgroundThread = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
         dispatch_async(backgroundThread) { () -> Void in
-            self.runAction(SKAction.playSoundFileNamed(selectedFileName, waitForCompletion: false))
+//            self.runAction(SKAction.playSoundFileNamed(selectedFileName, waitForCompletion: false))
+            do {
+                let fileInfo = selectedFileName.componentsSeparatedByString(".")
+                let soundURL = NSBundle.mainBundle().URLForResource(fileInfo[0], withExtension: fileInfo[1])
+                let audioPlayer = try AVAudioPlayer(contentsOfURL: soundURL!)
+                audioPlayer.volume = volume
+                audioPlayer.prepareToPlay()
+                
+                let playAction = SKAction.runBlock { () -> Void in
+                    audioPlayer.play()
+                }
+                let waitAction = SKAction.waitForDuration(audioPlayer.duration+1)
+                let seq = SKAction.sequence([playAction, waitAction])
+                self.runAction(seq)
+            } catch {
+                
+            }
         }
     }
 }
