@@ -117,7 +117,7 @@ class GameViewController: UIViewController, LevelDelegate {
     //finished level successfully
     func levelSucceeded() {
         let titles = ["Stellar!", "Rock-star!", "Out of this World!"]
-        let titleIndex = Int.random(min: 0, max: titles.count)
+        let titleIndex = Int.random(min: 0, max: titles.count-1)
         
         self.presentLevelTransition(title: titles[titleIndex],
             message: "Pluto survived this round with \(currentScore) points!",
