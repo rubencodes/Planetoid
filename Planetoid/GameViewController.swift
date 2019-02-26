@@ -16,8 +16,8 @@ class GameViewController: UIViewController, LevelDelegate {
     var currentScore  = 0
     var currentScene : SKScene?
     var currentLevel = 1
-    var scoreTimer : NSTimer?
-    var state : GameState = .Play
+    var scoreTimer : Timer?
+    var state : GameState = .play
     @IBOutlet var playPauseButton : UIButton?
     
     override func viewDidLoad() {
@@ -33,7 +33,7 @@ class GameViewController: UIViewController, LevelDelegate {
     }
     
     //changes presented scene to a given integer level
-    func loadLevel(level : Int) {
+    func loadLevel(_ level : Int) {
         currentScene = Level1Scene(size: self.view.frame.size) as SKScene
         (currentScene as! Level1Scene).levelDelegate = self
         
@@ -47,17 +47,17 @@ class GameViewController: UIViewController, LevelDelegate {
         skView.ignoresSiblingOrder = true
         
         /* Set the scale mode to scale to fit the window */
-        currentScene!.scaleMode = .AspectFill
+        currentScene!.scaleMode = .aspectFill
         skView.presentScene(currentScene!)
-        skView.paused = false
+        skView.isPaused = false
     }
     
-    override func shouldAutorotate() -> Bool {
+    override var shouldAutorotate : Bool {
         return true
     }
     
-    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
-        return .Landscape
+    override var supportedInterfaceOrientations : UIInterfaceOrientationMask {
+        return .landscape
     }
     
     override func didReceiveMemoryWarning() {
@@ -65,35 +65,35 @@ class GameViewController: UIViewController, LevelDelegate {
         // Release any cached data, images, etc that aren't in use.
     }
     
-    override func prefersStatusBarHidden() -> Bool {
+    override var prefersStatusBarHidden : Bool {
         return true
     }
     
     //begin tracking the score
     func startScoreTimer() {
-        scoreTimer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: Selector("score"), userInfo: nil, repeats: true)
+        scoreTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(GameViewController.score), userInfo: nil, repeats: true)
     }
     
     func score() {
-        ++currentScore
+        currentScore += 1
         
-        NSNotificationCenter.defaultCenter().postNotificationName("ScoreChangedNotification", object: currentScore)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "ScoreChangedNotification"), object: currentScore)
     }
     
     //sent from scene, tells us user gained points
-    func pointsGained(amount : Int?) -> Int {
+    func pointsGained(_ amount : Int?) -> Int {
         currentScore += amount != nil ? amount! : 1
         return currentScore
     }
 
     //sent from scene, tells us user gained life points
-    func lifeGained(amount : Int?) -> Int {
+    func lifeGained(_ amount : Int?) -> Int {
         currentHealth += amount != nil ? amount! : 1
         return currentHealth
     }
     
     //sent from scene, tells us user lost life points
-    func lifeLost(amount : Int?) -> Int {
+    func lifeLost(_ amount : Int?) -> Int {
         currentHealth = max(amount != nil ? currentHealth-amount! : currentHealth-1, 0)
         
         //if the user is out of points, it's game over.
@@ -117,13 +117,13 @@ class GameViewController: UIViewController, LevelDelegate {
     //finished level successfully
     func levelSucceeded() {
         let titles = ["Stellar!", "Rock-star!", "Out of this World!"]
-        let titleIndex = Int.random(min: 0, max: titles.count-1)
+        let titleIndex = Int.random(0, max: titles.count-1)
         
         self.presentLevelTransition(title: titles[titleIndex],
             message: "Pluto survived this round with \(currentScore) points!",
             optionTitle: "Continue")
         
-        currentLevel++
+        currentLevel += 1
     }
     
     //gameover
@@ -137,36 +137,36 @@ class GameViewController: UIViewController, LevelDelegate {
     }
     
     //option to transition between levels
-    func presentLevelTransition(title title: String, message: String, optionTitle: String) {
-        currentScene?.view?.paused = true
+    func presentLevelTransition(title: String, message: String, optionTitle: String) {
+        currentScene?.view?.isPaused = true
         scoreTimer?.invalidate()
         
         //ask the user before continuing
-        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
-        alert.addAction(UIAlertAction(title: optionTitle, style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: optionTitle, style: UIAlertActionStyle.default, handler: { (action) -> Void in
             //change to current level
             self.loadLevel(self.currentLevel)
         }))
         
-        self.presentViewController(alert, animated: true, completion: nil)
+        self.present(alert, animated: true, completion: nil)
     }
     
     func pause() {
-        self.state = .Pause
-        self.playPauseButton?.setImage(UIImage(named: "Play"), forState: UIControlState.Normal)
-        currentScene?.view?.paused = true
+        self.state = .pause
+        self.playPauseButton?.setImage(UIImage(named: "Play"), for: UIControlState())
+        currentScene?.view?.isPaused = true
         scoreTimer?.invalidate()
     }
     
     func play() {
-        self.state = .Play
-        self.playPauseButton?.setImage(UIImage(named: "Pause"), forState: UIControlState.Normal)
-        currentScene?.view?.paused = false
+        self.state = .play
+        self.playPauseButton?.setImage(UIImage(named: "Pause"), for: UIControlState())
+        currentScene?.view?.isPaused = false
         startScoreTimer()
     }
     
     @IBAction func togglePause() {
-        if self.state == .Play {
+        if self.state == .play {
             self.pause()
         } else {
             self.play()
@@ -175,14 +175,14 @@ class GameViewController: UIViewController, LevelDelegate {
 }
 
 enum GameState {
-    case Play, Pause
+    case play, pause
 }
 
 protocol LevelDelegate {
     func startScoreTimer()
-    func lifeLost(amount : Int?) -> Int
-    func lifeGained(amount : Int?) -> Int
-    func pointsGained(amount : Int?) -> Int
+    func lifeLost(_ amount : Int?) -> Int
+    func lifeGained(_ amount : Int?) -> Int
+    func pointsGained(_ amount : Int?) -> Int
     
     func getScore() -> Int
     func getHealth() -> Int
