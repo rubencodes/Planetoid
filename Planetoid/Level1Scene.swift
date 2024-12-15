@@ -6,70 +6,124 @@
 //  Copyright (c) 2015 Ruben. All rights reserved.
 //
 
+import Combine
 import SpriteKit
 import CoreMotion
 import Foundation
 import AVFoundation
 
-class Level1Scene: SKScene, SKPhysicsContactDelegate {
-    let motionManager: CMMotionManager = CMMotionManager()
-    let kAsteroidName = "asteroid"
-    let kPlutoName    = "pluto"
-    let kStarName     = "star"
-    let kExplodedName = "exploded"
-    let kScoreName    = "score"
-    let kLifeName     = "life"
-    
-    let kStarCount     = 20
-    let kStarPerLevelFactor = 5
-    let kAsteroidCount = 120
-    let kAsteroidPerLevelFactor = 20
-    let kPlutoBaseline = 20
-    
-    var levelDelegate : LevelDelegate?
-    var initialState : Double = -0.7
-    var scoreTimer : Timer?
-    
-    override func didMove(to view: SKView) {
-        /* Setup your scene here */
-        UIApplication.shared.isIdleTimerDisabled = true
-        NotificationCenter.default.addObserver(self, selector: #selector(Level1Scene.receiveUpdatedScore(_:)), name:NSNotification.Name(rawValue: "ScoreChangedNotification"), object: nil)
+extension NSNotification.Name {
+    static let scoreChangedNotification = NSNotification.Name(rawValue: "ScoreChangedNotification")
+}
 
-        //set up game scene
+final class Level1Scene: SKScene {
+
+    // MARK: - Nested Types
+
+    /// Collision-capable objects
+    enum ColliderType: UInt32 {
+        case asteroids = 1
+        case walls  = 2
+        case planet = 4
+        case stars  = 8
+    }
+
+    // MARK: - Internal Properties
+
+    var levelDelegate : LevelDelegate?
+
+    // MARK: - Private Properties
+
+    private let motionManager: CMMotionManager = CMMotionManager()
+    nonisolated private let kAsteroidName = "asteroid"
+    nonisolated private let kPlutoName    = "pluto"
+    nonisolated private let kStarName     = "star"
+    nonisolated private let kExplodedName = "exploded"
+    nonisolated private let kScoreName    = "score"
+    nonisolated private let kLifeName     = "life"
+    nonisolated private let kStarCount     = 20
+    nonisolated private let kStarPerLevelFactor = 5
+    nonisolated private let kAsteroidCount = 120
+    nonisolated private let kAsteroidPerLevelFactor = 20
+    nonisolated private let kPlutoBaseline = 20
+    private var initialState : Double = -0.7
+    private var scoreTimer : Timer?
+    private let notificationCenter: NotificationCenter = .default
+    private var cancellables: [AnyCancellable] = []
+
+
+    // MARK: - SKScene
+
+    /// Initial setup
+    override func didMove(to view: SKView) {
+        // Setup score change notification
+        cancellables = [
+            notificationCenter
+                .publisher(for: .scoreChangedNotification)
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] notification in
+                    self?.receiveUpdatedScore(notification)
+                }
+        ]
+
+        // Prevent sleeping
+        UIApplication.shared.isIdleTimerDisabled = true
+
+        // Set up game scene
         setupScene()
-        
-        //start watching the accelerometer
+
+        // Start watching the accelerometer
         if motionManager.isAccelerometerAvailable {
             motionManager.startAccelerometerUpdates()
             motionManager.accelerometerUpdateInterval = 0.01
         }
     }
-    
-    //update loop
+
+    /// Update loop
     override func update(_ currentTime: TimeInterval) {
         /* Called before each frame is rendered */
-        
+
         //update pluto according to accelerometer
         processUserMotionForUpdate(currentTime)
-        
+
         //move asteroids
         moveAsteroidsForUpdate()
     }
-    
-    //gets movement data from accelerometer and updates scene
-    func processUserMotionForUpdate(_ currentTime: CFTimeInterval) {
-        //get our hero, pluto
-        let pluto = childNode(withName: kPlutoName) as! SKSpriteNode
-        
-        //check if we have the accelerometer data
-        if let data = motionManager.accelerometerData {
-            //move pluto according to its variation from the baseline
-            pluto.physicsBody!.applyForce(CGVector(dx: 0, dy: 20.0 * (CGFloat(self.initialState) - CGFloat(data.acceleration.z))))
+
+    /// Handle touches
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+       for touch in touches {
+            let location = touch.location(in: self)
+            self.enumerateChildNodes(withName: kAsteroidName) { node, stop in
+                //update their position
+                node.position = CGPointMake(node.position.x - (2 * node.speed), node.position.y)
+
+                if node.contains(location) {
+
+                }
+            }
         }
     }
+
+    // MARK: - Private Functions
+
+    /// Gets movement data from accelerometer and updates scene
+    private func processUserMotionForUpdate(_ currentTime: CFTimeInterval) {
+        //get our hero, pluto, and the accelerometer data
+        guard let pluto = childNode(withName: kPlutoName) as? SKSpriteNode,
+              let data = motionManager.accelerometerData else {
+            return
+        }
+
+        //move pluto according to its variation from the baseline
+        pluto.physicsBody?.applyForce(
+            CGVector(dx: 0,
+                     dy: 20.0 * (CGFloat(self.initialState) - CGFloat(data.acceleration.z)))
+        )
+    }
     
-    //move asteroids forward at update loop
-    func moveAsteroidsForUpdate() {
+    /// Move asteroids forward at update loop
+    private func moveAsteroidsForUpdate() {
         var asteroidsVisible = false //keep track of asteroids
         
         //loop over all asteroids
@@ -88,7 +142,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         
         //if no asteroid was visible, raise flag for end of level
         if !asteroidsVisible {
-//            self.playLevelUpSound()
+            self.playLevelUpSound()
             self.levelDelegate?.levelSucceeded()
         }
         
@@ -103,70 +157,22 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    //contact happened between objects
-    func didBegin(_ contact: SKPhysicsContact) {
-        if contact as SKPhysicsContact? != nil {
-            let nodes     = [contact.bodyA.node!, contact.bodyB.node!]
-            let nodeNames = [contact.bodyA.node!.name!, contact.bodyB.node!.name!]
-            
-            if nodeNames.contains(kPlutoName) && nodeNames.contains(kAsteroidName) {
-                let node = nodes[nodeNames.index(of: kAsteroidName)!]
-                (node as! SKSpriteNode).texture = SKTexture(imageNamed: "Explosion")
-                node.name = kExplodedName
-                node.physicsBody!.isDynamic = false
-                
-                let currentLifeLevel = levelDelegate!.lifeLost(1)
-                updateLifeLevel(currentLifeLevel)
-                
-                playExplosionSound(volume: node.xScale)
-            }
-            
-            if nodeNames.contains(kPlutoName) && nodeNames.contains(kStarName) {
-                let node = nodes[nodeNames.index(of: kStarName)!]
-                node.removeFromParent()
-                
-                let currentLifeLevel = levelDelegate!.lifeGained(1)
-                updateLifeLevel(currentLifeLevel)
-                
-                let currentScore = levelDelegate!.pointsGained(10)
-                updateScoreLevel(currentScore)
-                
-                playStarSound()
-            }
-        }
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        /* Called when a touch begins */
-//        
-//        for touch in touches {
-//            let location = touch.locationInNode(self)
-//            print(location)
-//            self.enumerateChildNodesWithName(kAsteroidName) { node, stop in
-//                //update their position
-//                node.position = CGPointMake(node.position.x - (2 * node.speed), node.position.y)
-//                
-//                if(node.containsPoint(location)) {
-//                    
-//                }
-//            }
-//        }
-    }
-    
-    func setupScene() {
-        let currentLevel = (self.levelDelegate?.getLevel())! as Int
-        
+    private func setupScene() {
         setupFrame() //setup level frame
         setupBackground()
         setupPlayer() //setup pluto and add it to scene
-        setupAsteroids(kAsteroidCount + (kAsteroidPerLevelFactor * currentLevel)) //setup obstacles
-        setupStars(kStarCount + (kStarPerLevelFactor * currentLevel)) //setup stars
-        setupHUD() //setup heads-up display
-        
-        self.levelDelegate?.startScoreTimer()
+
+        guard let levelDelegate else { return }
+
+        setupAsteroids(level: levelDelegate.currentLevel) //setup obstacles
+        setupStars(level: levelDelegate.currentLevel) //setup stars
+        setupHUD(health: levelDelegate.currentHealth,
+                 score: levelDelegate.currentScore) //setup heads-up display
+
+        levelDelegate.startScoreTimer()
     }
     
-    func setupBackground() {
+    private func setupBackground() {
         let backgroundTexture = SKTexture(imageNamed: "background")
         
         //move background right to left; replace
@@ -178,7 +184,8 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
             //defining background; giving it height and moving width
             let background = SKSpriteNode(texture:backgroundTexture)
             background.zPosition = 0
-            background.position = CGPoint(x: backgroundTexture.size().width/2 + (backgroundTexture.size().width * CGFloat(i)), y: self.frame.midY)
+            background.position = CGPoint(x: backgroundTexture.size().width / 2 + (backgroundTexture.size().width * CGFloat(i)),
+                                          y: self.frame.midY)
             background.size.height = self.frame.height
             background.run(movingAndReplacingBackground)
             
@@ -186,11 +193,11 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    func setupFrame() {
+    private func setupFrame() {
         //set up boundaries around frame
         physicsBody = SKPhysicsBody(edgeLoopFrom: frame)
-        physicsBody!.isDynamic = false
-        physicsBody!.categoryBitMask = ColliderType.walls.rawValue
+        physicsBody?.isDynamic = false
+        physicsBody?.categoryBitMask = ColliderType.walls.rawValue
         isUserInteractionEnabled = true
         physicsWorld.contactDelegate = self
         
@@ -198,7 +205,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         backgroundColor = UIColor(red: 0, green: 0, blue: 140/255, alpha: 1)
     }
     
-    func setupHUD() {
+    private func setupHUD(health: Int, score: Int) {
         //create health label
         let lifeLabel = SKLabelNode(fontNamed: "Consolas")
         lifeLabel.name = kLifeName
@@ -209,8 +216,8 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         
         //add label to scene
         addChild(lifeLabel)
-        updateLifeLevel((self.levelDelegate?.getHealth())!)
-        
+        updateLifeLevel(health)
+
         //create score label
         let scoreLabel = SKLabelNode(fontNamed: "CourierNewPS-BoldMT")
         scoreLabel.name = kScoreName
@@ -218,13 +225,13 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
         scoreLabel.position = CGPoint(x: 10, y: size.height - 40)
         scoreLabel.zPosition = 3
-        
+
         //add label to scene
         addChild(scoreLabel)
-        updateScoreLevel((self.levelDelegate?.getScore())!)
+        updateScoreLevel(score)
     }
     
-    func setupPlayer() {
+    private func setupPlayer() {
         //create our hero, pluto
         let pluto = SKSpriteNode(imageNamed:"Pluto")
         pluto.name = kPlutoName
@@ -234,24 +241,30 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         pluto.yScale = 0.1
         
         //position pluto at the horizontal baseline, center vertically
-        pluto.position = CGPoint(x: self.frame.minX + pluto.size.width/2 + CGFloat(kPlutoBaseline), y: self.frame.midY)
-        
+
+        let safeAreaInsets = levelDelegate?.safeAreaInsets ?? .zero
+        let leadingInset = safeAreaInsets.left
+        pluto.position = CGPoint(x: leadingInset + pluto.size.width / 2 + CGFloat(kPlutoBaseline),
+                                 y: frame.midY)
+
         //setup physics body to collide with the wall bounds
-        pluto.physicsBody = SKPhysicsBody(circleOfRadius: pluto.frame.width/2)
-        pluto.physicsBody!.isDynamic = true
-        pluto.physicsBody!.affectedByGravity = false
-        pluto.physicsBody!.mass = 0.02
-        pluto.physicsBody!.restitution = 0
-        pluto.physicsBody!.allowsRotation = false
-        pluto.physicsBody!.categoryBitMask = ColliderType.planet.rawValue
-        pluto.physicsBody!.collisionBitMask = ColliderType.walls.rawValue
+        pluto.physicsBody = SKPhysicsBody(circleOfRadius: pluto.frame.width / 2)
+        pluto.physicsBody?.isDynamic = true
+        pluto.physicsBody?.affectedByGravity = false
+        pluto.physicsBody?.mass = 0.02
+        pluto.physicsBody?.restitution = 0
+        pluto.physicsBody?.allowsRotation = false
+        pluto.physicsBody?.categoryBitMask = ColliderType.planet.rawValue
+        pluto.physicsBody?.collisionBitMask = ColliderType.walls.rawValue
         pluto.zPosition = 2
         
         //add pluto to scene
         self.addChild(pluto)
     }
     
-    func setupStars(_ starCount : Int) {
+    private func setupStars(level: Int) {
+        let starCount = kStarCount + (kStarPerLevelFactor * level)
+
         //create starCount stars
         for i in 0...starCount {
             //create a star
@@ -260,8 +273,9 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
             
             //generate a pseudo-random position
             let sceneLength = self.frame.maxX*10
-            let starPositionY = CGFloat.random(self.frame.minY, max: self.frame.maxY)
-            let starPositionX = CGFloat.random((CGFloat(i)/CGFloat(starCount))*(sceneLength*0.9), max: sceneLength)
+            let starPositionY: CGFloat = .random(in: self.frame.minY..<self.frame.maxY)
+            let minStarPositionX = (CGFloat(i) / CGFloat(starCount)) * (sceneLength * 0.9)
+            let starPositionX: CGFloat = .random(in: minStarPositionX..<sceneLength)
             star.position = CGPoint(x: starPositionX, y: starPositionY)
             
             //fixed scale size
@@ -283,55 +297,49 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    func setupAsteroids(_ asteroidCount : Int) {
+    private func setupAsteroids(level: Int) {
+        let asteroidCount = kAsteroidCount + (kAsteroidPerLevelFactor * level)
+
         //create kAsteroidCount asteroids
-        var clearPath = (top : 0.45 as CGFloat, bottom: 0.55 as CGFloat)
+        var clearPath: CGFloat = .random(in: 0.45...0.55)
         for i in 0...asteroidCount {
             //create a random Asteroid (3 variations)
-            let asteroid = SKSpriteNode(imageNamed: "Asteroid-\(Int.random(1, max: 3))")
+            let asteroid = SKSpriteNode(imageNamed: "Asteroid-\(Int.random(in: 1..<3))")
             asteroid.name = kAsteroidName
             
             //generate a pseudo-random position
-            let sceneLength = self.frame.maxX*10
+            let sceneLength = frame.maxX * 10
 
             //position asteroids on either side of path we keep clear
-            let asteroidPositionY = Bool.random()
-                ? CGFloat.random(self.frame.minY, max: self.frame.maxY*clearPath.top) //position UP
-                : CGFloat.random(self.frame.maxY*clearPath.bottom, max: self.frame.maxY) //position DOWN
+            let asteroidPositionY: CGFloat = Bool.random()
+            ? .random(in: frame.minY...(frame.maxY * (clearPath + 0.05))) //position UP
+            : .random(in: (frame.maxY * (clearPath - 0.05))...frame.maxY) //position DOWN
             //update clearPath for next round
-            let shift = CGFloat.random(-0.1, max: 0.1)
-            
+            let shift: CGFloat = .random(in: -0.1..<0.1)
+
             //bound path to top and bottom
-            if clearPath.top+shift <= 1 && clearPath.bottom >= 0 {
-                clearPath.top    += shift
-                clearPath.bottom += shift
-            } else if clearPath.top+shift <= 1 {
-                clearPath.top    = 0.1
-                clearPath.bottom = 0
-            } else {
-                clearPath.top    = 1
-                clearPath.bottom = 0.9
-            }
-            
+            clearPath = max(min(clearPath + shift, 0.95), 0.05)
+
             //weighs X position towards end of scene so level gets harder
-            let asteroidPositionX = CGFloat.random((CGFloat(i)/CGFloat(asteroidCount))*(sceneLength*0.9), max: sceneLength)
+            let minAsteroidPosition: CGFloat = (CGFloat(i) / CGFloat(asteroidCount)) * (sceneLength * 0.9)
+            let asteroidPositionX: CGFloat = .random(in: minAsteroidPosition..<sceneLength)
             asteroid.position = CGPoint(x: asteroidPositionX, y: asteroidPositionY)
             
             //size and rotate asteroid at random within bounds
-            let scale = CGFloat.random(0.05, max: 0.15)
+            let scale: CGFloat = .random(in: 0.05...0.15)
             asteroid.xScale = scale
             asteroid.yScale = scale
-            asteroid.zRotation = CGFloat.random(0, max: 360)
-            
+            asteroid.zRotation = .random(in: 0...360)
+
             //setup physics body to collide with other asteroids, stars and pluto
             asteroid.physicsBody = SKPhysicsBody(circleOfRadius: asteroid.frame.width/2)
-            asteroid.physicsBody!.isDynamic = true
-            asteroid.physicsBody!.affectedByGravity = false
-            asteroid.physicsBody!.mass = 0.02
-            asteroid.speed = CGFloat.random(1.3, max: 1.5) //random speed, mostly for later use
-            asteroid.physicsBody!.categoryBitMask    = ColliderType.asteroids.rawValue
-            asteroid.physicsBody!.contactTestBitMask = ColliderType.planet.rawValue
-            asteroid.physicsBody!.collisionBitMask   = ColliderType.planet.rawValue
+            asteroid.physicsBody?.isDynamic = true
+            asteroid.physicsBody?.affectedByGravity = false
+            asteroid.physicsBody?.mass = 0.02
+            asteroid.speed = CGFloat.random(in: 1.3...1.5) //random speed, mostly for later use
+            asteroid.physicsBody?.categoryBitMask    = ColliderType.asteroids.rawValue
+            asteroid.physicsBody?.contactTestBitMask = ColliderType.planet.rawValue
+            asteroid.physicsBody?.collisionBitMask   = ColliderType.planet.rawValue
             asteroid.zPosition = 1
             
             //add asteroid to scene
@@ -340,7 +348,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
     }
     
     //change in life level, update HUD label
-    func updateLifeLevel(_ currentLifeLevel : Int) {
+    private func updateLifeLevel(_ currentLifeLevel : Int) {
         let lifeLabel = self.childNode(withName: kLifeName) as! SKLabelNode
         
         lifeLabel.text = String(repeating: "|", count: currentLifeLevel)
@@ -355,7 +363,7 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
     }
     
     //change in score level, update HUD label
-    func updateScoreLevel(_ currentScore : Int) {
+    private func updateScoreLevel(_ currentScore : Int) {
         let scoreLabel = self.childNode(withName: kScoreName) as! SKLabelNode
         
         scoreLabel.text = String(format: "%05d", currentScore)
@@ -363,41 +371,43 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
     }
     
     //receives notification of updated score
-    func receiveUpdatedScore(_ notification: Notification) {
-        guard let score = notification.object else {
+    private func receiveUpdatedScore(_ notification: Notification) {
+        guard let currentScore = notification.object as? Int else {
             return
         }
         
-        let currentScore = score as! Int
         updateScoreLevel(currentScore)
     }
     
     //plays explosion sound effect
-    func playExplosionSound(volume: CGFloat) {
-        //let transformedVolume = Float((volume - 0.04) * 10)
-        //playSoundFromArray(["b1.mp3", "b2.mp3", "b3.mp3", "b4.mp3"], volume: transformedVolume)
+    private func playExplosionSound(volume: CGFloat) {
+        let transformedVolume = Float((volume - 0.04) * 10)
+        playSoundFromArray(["b1.mp3", "b2.mp3", "b3.mp3", "b4.mp3"], volume: transformedVolume)
     }
     
     //plays star sound effect
-    func playStarSound() {
-        //playSoundFromArray(["l1.mp3"], volume: 0.5)
+    private func playStarSound() {
+        playSoundFromArray(["l1.mp3"], volume: 0.5)
     }
     
     //plays star sound effect
-    func playLevelUpSound() {
-        //playSoundFromArray(["a1.mp3"], volume: 0.5)
+    private func playLevelUpSound() {
+        playSoundFromArray(["a1.mp3"], volume: 0.5)
     }
     
-    func playSoundFromArray(_ soundArray : [String], volume: Float) {
-        let selectedFileName = soundArray[Int.random(0, max: soundArray.count-1)]
-        
-        let backgroundThread = DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.default)
+    private func playSoundFromArray(_ soundArray : [String], volume: Float) {
+        let selectedFileName = soundArray[Int.random(in: 0..<soundArray.count)]
+
+        let backgroundThread = DispatchQueue.global(qos: .background)
         backgroundThread.async { () -> Void in
-//            self.runAction(SKAction.playSoundFileNamed(selectedFileName, waitForCompletion: false))
             do {
                 let fileInfo = selectedFileName.components(separatedBy: ".")
                 let soundURL = Bundle.main.url(forResource: fileInfo[0], withExtension: fileInfo[1])
-                let audioPlayer = try AVAudioPlayer(contentsOf: soundURL!)
+                guard let soundURL else {
+                    print("Failed to create sound URL from \(selectedFileName)")
+                    return
+                }
+                let audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
                 audioPlayer.volume = volume
                 audioPlayer.prepareToPlay()
                 
@@ -406,7 +416,10 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
                 }
                 let waitAction = SKAction.wait(forDuration: audioPlayer.duration+1)
                 let seq = SKAction.sequence([playAction, waitAction])
-                self.run(seq)
+                DispatchQueue.main.async {
+                    self.run(SKAction.playSoundFileNamed(selectedFileName, waitForCompletion: false))
+                    self.run(seq)
+                }
             } catch {
                 
             }
@@ -414,41 +427,46 @@ class Level1Scene: SKScene, SKPhysicsContactDelegate {
     }
 }
 
-//collision-capable objects
-enum ColliderType: UInt32 {
-    case asteroids = 1
-    case walls  = 2
-    case planet = 4
-    case stars  = 8
-}
+// MARK: - SKPhysicsContactDelegate
 
-//generates random Ints and CGFloats
-public extension Int {
-    public static func random() -> Int {
-        return Int(arc4random())
-    }
-    
-    public static func random(_ n: Int) -> Int {
-        return Int(arc4random_uniform(UInt32(n)))
-    }
-    
-    public static func random(_ min: Int, max: Int) -> Int {
-        return Int(arc4random_uniform(UInt32(max - min + 1))) + min
-    }
-}
+extension Level1Scene: SKPhysicsContactDelegate {
 
-public extension CGFloat {
-    public static func random() -> CGFloat {
-        return CGFloat(Float(arc4random()) / 0xFFFFFFFF)
-    }
-    
-    public static func random(_ min: CGFloat, max: CGFloat) -> CGFloat {
-        return CGFloat.random() * (max - min) + min
-    }
-}
+    //contact happened between objects
+    nonisolated func didBegin(_ contact: SKPhysicsContact) {
+        let bodies = [contact.bodyA, contact.bodyB]
+        let nodes = bodies.map(\.node)
 
-public extension Bool {
-    public static func random() -> Bool {
-        return round(CGFloat.random()).truncatingRemainder(dividingBy: 2) == 0
+        Task {
+            await MainActor.run {
+                guard nodes.contains(where: { $0?.name == kPlutoName }),
+                      let levelDelegate else {
+                    return
+                }
+
+                if let asteroid = nodes.first(where: { $0?.name == kAsteroidName }),
+                   let asteroid = asteroid as? SKSpriteNode {
+                    asteroid.texture = SKTexture(imageNamed: "Explosion")
+                    asteroid.name = kExplodedName
+                    asteroid.physicsBody?.isDynamic = false
+
+                    let currentLifeLevel = levelDelegate.lifeLost(1)
+                    updateLifeLevel(currentLifeLevel)
+                    playExplosionSound(volume: asteroid.xScale)
+                }
+
+                if let star = nodes.first(where: { $0?.name == kStarName }),
+                   let star {
+                    star.removeFromParent()
+
+                    let currentLifeLevel = levelDelegate.lifeGained(1)
+                    updateLifeLevel(currentLifeLevel)
+
+                    let currentScore = levelDelegate.pointsGained(10)
+                    updateScoreLevel(currentScore)
+
+                    playStarSound()
+                }
+            }
+        }
     }
 }
