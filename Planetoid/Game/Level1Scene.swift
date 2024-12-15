@@ -12,11 +12,7 @@ import CoreMotion
 import Foundation
 import AVFoundation
 
-extension NSNotification.Name {
-    static let scoreChangedNotification = NSNotification.Name(rawValue: "ScoreChangedNotification")
-}
-
-final class Level1Scene: SKScene {
+final class Level1Scene: SKScene, ObservableObject {
 
     // MARK: - Nested Types
 
@@ -48,26 +44,11 @@ final class Level1Scene: SKScene {
     nonisolated private let kPlutoBaseline = 20
     private var initialState : Double = -0.7
     private var scoreTimer : Timer?
-    private let notificationCenter: NotificationCenter = .default
-    private var cancellables: [AnyCancellable] = []
-
 
     // MARK: - SKScene
 
     /// Initial setup
     override func didMove(to view: SKView) {
-        // Setup score change notification
-        cancellables = [
-            notificationCenter
-                .publisher(for: .scoreChangedNotification)
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] notification in
-                    self?.receiveUpdatedScore(notification)
-                }
-        ]
-
-        // Prevent sleeping
-        UIApplication.shared.isIdleTimerDisabled = true
 
         // Set up game scene
         setupScene()
@@ -94,7 +75,7 @@ final class Level1Scene: SKScene {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
        for touch in touches {
             let location = touch.location(in: self)
-            self.enumerateChildNodes(withName: kAsteroidName) { node, stop in
+            enumerateChildNodes(withName: kAsteroidName) { node, stop in
                 //update their position
                 node.position = CGPointMake(node.position.x - (2 * node.speed), node.position.y)
 
@@ -118,7 +99,7 @@ final class Level1Scene: SKScene {
         //move pluto according to its variation from the baseline
         pluto.physicsBody?.applyForce(
             CGVector(dx: 0,
-                     dy: 20.0 * (CGFloat(self.initialState) - CGFloat(data.acceleration.z)))
+                     dy: 20.0 * (CGFloat(initialState) - CGFloat(data.acceleration.z)))
         )
     }
     
@@ -127,12 +108,12 @@ final class Level1Scene: SKScene {
         var asteroidsVisible = false //keep track of asteroids
         
         //loop over all asteroids
-        self.enumerateChildNodes(withName: kAsteroidName) { node, stop in
+        enumerateChildNodes(withName: kAsteroidName) { node, stop in
             //update their position
             node.position = CGPoint(x: node.position.x - (2 * node.speed), y: node.position.y)
             
             //check if asteroid is still visible
-            if node.position.x+node.frame.width > self.frame.minX {
+            if node.position.x + node.frame.width > self.frame.minX {
                 asteroidsVisible = true
             }
             
@@ -142,34 +123,31 @@ final class Level1Scene: SKScene {
         
         //if no asteroid was visible, raise flag for end of level
         if !asteroidsVisible {
-            self.playLevelUpSound()
-            self.levelDelegate?.levelSucceeded()
+            playLevelUpSound()
+            levelDelegate?.levelSucceeded()
         }
         
         //loop over exploded asteroids and update their positions, too
-        self.enumerateChildNodes(withName: kExplodedName) { node, stop in
+        enumerateChildNodes(withName: kExplodedName) { node, stop in
             node.position = CGPoint(x: node.position.x - 2, y: node.position.y)
         }
         
         //loop over stars and update their positions, too
-        self.enumerateChildNodes(withName: kStarName) { node, stop in
+        enumerateChildNodes(withName: kStarName) { node, stop in
             node.position = CGPoint(x: node.position.x - 2, y: node.position.y)
         }
     }
     
     private func setupScene() {
+        guard let levelDelegate, size.width > .zero, size.height > .zero else { return }
+
         setupFrame() //setup level frame
         setupBackground()
         setupPlayer() //setup pluto and add it to scene
-
-        guard let levelDelegate else { return }
-
         setupAsteroids(level: levelDelegate.currentLevel) //setup obstacles
         setupStars(level: levelDelegate.currentLevel) //setup stars
-        setupHUD(health: levelDelegate.currentHealth,
-                 score: levelDelegate.currentScore) //setup heads-up display
 
-        levelDelegate.startScoreTimer()
+        levelDelegate.play()
     }
     
     private func setupBackground() {
@@ -185,11 +163,11 @@ final class Level1Scene: SKScene {
             let background = SKSpriteNode(texture:backgroundTexture)
             background.zPosition = 0
             background.position = CGPoint(x: backgroundTexture.size().width / 2 + (backgroundTexture.size().width * CGFloat(i)),
-                                          y: self.frame.midY)
-            background.size.height = self.frame.height
+                                          y: frame.midY)
+            background.size.height = frame.height
             background.run(movingAndReplacingBackground)
             
-            self.addChild(background)
+            addChild(background)
         }
     }
     
@@ -205,32 +183,6 @@ final class Level1Scene: SKScene {
         backgroundColor = UIColor(red: 0, green: 0, blue: 140/255, alpha: 1)
     }
     
-    private func setupHUD(health: Int, score: Int) {
-        //create health label
-        let lifeLabel = SKLabelNode(fontNamed: "Consolas")
-        lifeLabel.name = kLifeName
-        lifeLabel.fontSize = 25
-        lifeLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.right
-        lifeLabel.position = CGPoint(x: frame.size.width - 10, y: size.height - 40)
-        lifeLabel.zPosition = 3
-        
-        //add label to scene
-        addChild(lifeLabel)
-        updateLifeLevel(health)
-
-        //create score label
-        let scoreLabel = SKLabelNode(fontNamed: "CourierNewPS-BoldMT")
-        scoreLabel.name = kScoreName
-        scoreLabel.fontSize = 25
-        scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        scoreLabel.position = CGPoint(x: 10, y: size.height - 40)
-        scoreLabel.zPosition = 3
-
-        //add label to scene
-        addChild(scoreLabel)
-        updateScoreLevel(score)
-    }
-    
     private func setupPlayer() {
         //create our hero, pluto
         let pluto = SKSpriteNode(imageNamed:"Pluto")
@@ -242,9 +194,7 @@ final class Level1Scene: SKScene {
         
         //position pluto at the horizontal baseline, center vertically
 
-        let safeAreaInsets = levelDelegate?.safeAreaInsets ?? .zero
-        let leadingInset = safeAreaInsets.left
-        pluto.position = CGPoint(x: leadingInset + pluto.size.width / 2 + CGFloat(kPlutoBaseline),
+        pluto.position = CGPoint(x: pluto.size.width / 2 + CGFloat(kPlutoBaseline),
                                  y: frame.midY)
 
         //setup physics body to collide with the wall bounds
@@ -259,7 +209,7 @@ final class Level1Scene: SKScene {
         pluto.zPosition = 2
         
         //add pluto to scene
-        self.addChild(pluto)
+        addChild(pluto)
     }
     
     private func setupStars(level: Int) {
@@ -272,8 +222,8 @@ final class Level1Scene: SKScene {
             star.name = kStarName
             
             //generate a pseudo-random position
-            let sceneLength = self.frame.maxX*10
-            let starPositionY: CGFloat = .random(in: self.frame.minY..<self.frame.maxY)
+            let sceneLength = frame.maxX * 10
+            let starPositionY: CGFloat = .random(in: frame.minY..<frame.maxY)
             let minStarPositionX = (CGFloat(i) / CGFloat(starCount)) * (sceneLength * 0.9)
             let starPositionX: CGFloat = .random(in: minStarPositionX..<sceneLength)
             star.position = CGPoint(x: starPositionX, y: starPositionY)
@@ -293,7 +243,7 @@ final class Level1Scene: SKScene {
             star.zPosition = 1
             
             //add star to scene
-            self.addChild(star)
+            addChild(star)
         }
     }
     
@@ -343,42 +293,10 @@ final class Level1Scene: SKScene {
             asteroid.zPosition = 1
             
             //add asteroid to scene
-            self.addChild(asteroid)
+            addChild(asteroid)
         }
     }
-    
-    //change in life level, update HUD label
-    private func updateLifeLevel(_ currentLifeLevel : Int) {
-        let lifeLabel = self.childNode(withName: kLifeName) as! SKLabelNode
-        
-        lifeLabel.text = String(repeating: "|", count: currentLifeLevel)
-        
-        if currentLifeLevel <= 5 {
-            lifeLabel.fontColor = SKColor.red
-        } else if currentLifeLevel <= 10 {
-            lifeLabel.fontColor = SKColor.yellow
-        } else {
-            lifeLabel.fontColor = SKColor.init(red: 1, green: 1, blue: 1, alpha: 0.69)
-        }
-    }
-    
-    //change in score level, update HUD label
-    private func updateScoreLevel(_ currentScore : Int) {
-        let scoreLabel = self.childNode(withName: kScoreName) as! SKLabelNode
-        
-        scoreLabel.text = String(format: "%05d", currentScore)
-        scoreLabel.fontColor = SKColor.init(red: 1, green: 1, blue: 1, alpha: 0.69)
-    }
-    
-    //receives notification of updated score
-    private func receiveUpdatedScore(_ notification: Notification) {
-        guard let currentScore = notification.object as? Int else {
-            return
-        }
-        
-        updateScoreLevel(currentScore)
-    }
-    
+
     //plays explosion sound effect
     private func playExplosionSound(volume: CGFloat) {
         let transformedVolume = Float((volume - 0.04) * 10)
@@ -438,10 +356,7 @@ extension Level1Scene: SKPhysicsContactDelegate {
 
         Task {
             await MainActor.run {
-                guard nodes.contains(where: { $0?.name == kPlutoName }),
-                      let levelDelegate else {
-                    return
-                }
+                guard let levelDelegate, nodes.contains(where: { $0?.name == kPlutoName }) else { return }
 
                 if let asteroid = nodes.first(where: { $0?.name == kAsteroidName }),
                    let asteroid = asteroid as? SKSpriteNode {
@@ -449,8 +364,7 @@ extension Level1Scene: SKPhysicsContactDelegate {
                     asteroid.name = kExplodedName
                     asteroid.physicsBody?.isDynamic = false
 
-                    let currentLifeLevel = levelDelegate.lifeLost(1)
-                    updateLifeLevel(currentLifeLevel)
+                    levelDelegate.lifeLost(1)
                     playExplosionSound(volume: asteroid.xScale)
                 }
 
@@ -458,11 +372,8 @@ extension Level1Scene: SKPhysicsContactDelegate {
                    let star {
                     star.removeFromParent()
 
-                    let currentLifeLevel = levelDelegate.lifeGained(1)
-                    updateLifeLevel(currentLifeLevel)
-
-                    let currentScore = levelDelegate.pointsGained(10)
-                    updateScoreLevel(currentScore)
+                    levelDelegate.lifeGained(1)
+                    levelDelegate.pointsGained(10)
 
                     playStarSound()
                 }

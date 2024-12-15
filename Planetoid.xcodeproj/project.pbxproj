@@ -3,30 +3,43 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		45A484651B33D51E002821BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A484641B33D51E002821BC /* AppDelegate.swift */; };
-		45A484671B33D51E002821BC /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 45A484661B33D51E002821BC /* GameScene.sks */; };
-		45A484691B33D51F002821BC /* Level1Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A484681B33D51F002821BC /* Level1Scene.swift */; };
-		45A4846B1B33D51F002821BC /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A4846A1B33D51F002821BC /* GameViewController.swift */; };
-		45A4846E1B33D51F002821BC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45A4846C1B33D51F002821BC /* Main.storyboard */; };
+		454AE20E2D0F20F70089C166 /* PlanetoidApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 454AE20D2D0F20F70089C166 /* PlanetoidApp.swift */; };
 		45A484701B33D51F002821BC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 45A4846F1B33D51F002821BC /* Assets.xcassets */; };
 		45A484731B33D51F002821BC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45A484711B33D51F002821BC /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		454AE20D2D0F20F70089C166 /* PlanetoidApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanetoidApp.swift; sourceTree = "<group>"; };
 		45A484611B33D51E002821BC /* Planetoid.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Planetoid.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		45A484641B33D51E002821BC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		45A484661B33D51E002821BC /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
-		45A484681B33D51F002821BC /* Level1Scene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Level1Scene.swift; sourceTree = "<group>"; };
-		45A4846A1B33D51F002821BC /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
-		45A4846D1B33D51F002821BC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		45A4846F1B33D51F002821BC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		45A484721B33D51F002821BC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		45A484741B33D51F002821BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		454AE2202D0F28FC0089C166 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				GameScene.sks,
+				GameView.swift,
+				Level1Scene.swift,
+			);
+			target = 45A484601B33D51E002821BC /* Planetoid */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		454AE20F2D0F24490089C166 /* Extensions */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Extensions; sourceTree = "<group>"; };
+		454AE2102D0F244E0089C166 /* Views */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Views; sourceTree = "<group>"; };
+		454AE2152D0F263E0089C166 /* Models */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Models; sourceTree = "<group>"; };
+		454AE21F2D0F28F90089C166 /* Game */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (454AE2202D0F28FC0089C166 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Game; sourceTree = "<group>"; };
+		454AE2232D0F2C2E0089C166 /* Delegates */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Delegates; sourceTree = "<group>"; };
+		454AE22C2D0F3FC30089C166 /* View Modifiers */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "View Modifiers"; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		45A4845E1B33D51E002821BC /* Frameworks */ = {
@@ -58,11 +71,13 @@
 		45A484631B33D51E002821BC /* Planetoid */ = {
 			isa = PBXGroup;
 			children = (
-				45A484641B33D51E002821BC /* AppDelegate.swift */,
-				45A484661B33D51E002821BC /* GameScene.sks */,
-				45A484681B33D51F002821BC /* Level1Scene.swift */,
-				45A4846A1B33D51F002821BC /* GameViewController.swift */,
-				45A4846C1B33D51F002821BC /* Main.storyboard */,
+				454AE2232D0F2C2E0089C166 /* Delegates */,
+				454AE21F2D0F28F90089C166 /* Game */,
+				454AE2152D0F263E0089C166 /* Models */,
+				454AE20F2D0F24490089C166 /* Extensions */,
+				454AE22C2D0F3FC30089C166 /* View Modifiers */,
+				454AE2102D0F244E0089C166 /* Views */,
+				454AE20D2D0F20F70089C166 /* PlanetoidApp.swift */,
 				45A484711B33D51F002821BC /* LaunchScreen.storyboard */,
 				45A4846F1B33D51F002821BC /* Assets.xcassets */,
 				45A484741B33D51F002821BC /* Info.plist */,
@@ -84,6 +99,13 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				454AE20F2D0F24490089C166 /* Extensions */,
+				454AE2102D0F244E0089C166 /* Views */,
+				454AE2152D0F263E0089C166 /* Models */,
+				454AE2232D0F2C2E0089C166 /* Delegates */,
+				454AE22C2D0F3FC30089C166 /* View Modifiers */,
 			);
 			name = Planetoid;
 			productName = Planetoid;
@@ -129,10 +151,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				45A484671B33D51E002821BC /* GameScene.sks in Resources */,
 				45A484731B33D51F002821BC /* LaunchScreen.storyboard in Resources */,
 				45A484701B33D51F002821BC /* Assets.xcassets in Resources */,
-				45A4846E1B33D51F002821BC /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,23 +163,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				45A484691B33D51F002821BC /* Level1Scene.swift in Sources */,
-				45A4846B1B33D51F002821BC /* GameViewController.swift in Sources */,
-				45A484651B33D51E002821BC /* AppDelegate.swift in Sources */,
+				454AE20E2D0F20F70089C166 /* PlanetoidApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		45A4846C1B33D51F002821BC /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				45A4846D1B33D51F002821BC /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		45A484711B33D51F002821BC /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -284,6 +294,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = FG7AYYTX96;
 				INFOPLIST_FILE = Planetoid/Info.plist;
@@ -303,6 +314,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = FG7AYYTX96;
 				INFOPLIST_FILE = Planetoid/Info.plist;
