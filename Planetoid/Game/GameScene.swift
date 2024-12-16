@@ -22,6 +22,7 @@ final class GameScene: SKScene, ObservableObject {
         case stars  = 8
     }
 
+    /// Sprite nodes
     enum SpriteFactory {
         case pluto
         case star
@@ -37,6 +38,7 @@ final class GameScene: SKScene, ObservableObject {
         }
     }
 
+    /// Texture nodes
     enum TextureFactory {
         case asteroid
         case background
@@ -50,14 +52,17 @@ final class GameScene: SKScene, ObservableObject {
         }
     }
 
+    /// Different devices have different input capabilities;
+    /// Pluto is the main thing a user needs to control, so
+    /// whichever of these matches first will be our control.
     private static let drivers: [PlutoDriver.Type] = [
+        AccelerometerDriver.self,
         MouseDriver.self,
-        AccelerometerDriver.self
     ]
 
     // MARK: - Internal Properties
 
-    var levelDelegate : LevelDelegate?
+    var levelDelegate : GameDelegate?
 
     // MARK: - Private Properties
 
@@ -128,14 +133,14 @@ final class GameScene: SKScene, ObservableObject {
     
     /// Move asteroids forward at update loop
     private func moveAsteroidsForUpdate() {
-        var asteroidsVisible = false //keep track of asteroids
-        
-        //loop over all asteroids
+        var asteroidsVisible = false // keep track of asteroids
+
+        // loop over all asteroids
         enumerateChildNodes(withName: kAsteroidName) { node, stop in
-            //update their position
+            // update their position
             node.position = CGPoint(x: node.position.x - (2 * node.speed), y: node.position.y)
             
-            //check if asteroid is still visible
+            // check if asteroid is still visible
             if node.position.x + node.frame.width > self.frame.minX {
                 asteroidsVisible = true
             }
@@ -144,18 +149,18 @@ final class GameScene: SKScene, ObservableObject {
             node.run(rotateAsteroid)
         }
         
-        //if no asteroid was visible, raise flag for end of level
+        // if no asteroid was visible, raise flag for end of level
         if asteroidsVisible == false {
             playLevelUpSound()
-            levelDelegate?.levelSucceeded()
+            levelDelegate?.execute(.levelSuccess)
         }
         
-        //loop over exploded asteroids and update their positions, too
+        // loop over exploded asteroids and update their positions, too
         enumerateChildNodes(withName: kExplodedName) { node, stop in
             node.position = CGPoint(x: node.position.x - 2, y: node.position.y)
         }
         
-        //loop over stars and update their positions, too
+        // loop over stars and update their positions, too
         enumerateChildNodes(withName: kStarName) { node, stop in
             node.position = CGPoint(x: node.position.x - 2, y: node.position.y)
         }
@@ -164,25 +169,25 @@ final class GameScene: SKScene, ObservableObject {
     private func setupScene() {
         guard let levelDelegate, size.width > .zero, size.height > .zero else { return }
 
-        setupFrame() //setup level frame
+        setupFrame() // setup level frame
         setupBackground()
-        setupPlayer() //setup pluto and add it to scene
-        setupAsteroids(level: levelDelegate.currentLevel) //setup obstacles
-        setupStars(level: levelDelegate.currentLevel) //setup stars
+        setupPlayer() // setup pluto and add it to scene
+        setupAsteroids(level: levelDelegate.currentLevel) // setup obstacles
+        setupStars(level: levelDelegate.currentLevel) // setup stars
 
-        levelDelegate.play()
+        levelDelegate.execute(.ready)
     }
     
     private func setupBackground() {
         let backgroundTexture = TextureFactory.background.node
 
-        //move background right to left; replace
+        // move background right to left; replace
         let shiftBackground = SKAction.moveBy(x: -backgroundTexture.size().width, y: 0, duration: 80)
         let replaceBackground = SKAction.moveBy(x: backgroundTexture.size().width, y:0, duration: 0)
         let movingAndReplacingBackground = SKAction.repeatForever(SKAction.sequence([shiftBackground,replaceBackground]))
         
         for i in 0..<3 {
-            //defining background; giving it height and moving width
+            // defining background; giving it height and moving width
             let background = SKSpriteNode(texture:backgroundTexture)
             background.zPosition = 0
             background.position = CGPoint(x: backgroundTexture.size().width / 2 + (backgroundTexture.size().width * CGFloat(i)),
@@ -195,29 +200,28 @@ final class GameScene: SKScene, ObservableObject {
     }
     
     private func setupFrame() {
-        //set up boundaries around frame
+        //s et up boundaries around frame
         physicsBody = SKPhysicsBody(edgeLoopFrom: frame)
         physicsBody?.isDynamic = false
         physicsBody?.categoryBitMask = ColliderType.walls.rawValue
         isUserInteractionEnabled = true
         physicsWorld.contactDelegate = self
         
-        //set background, dark blue
+        // set background, dark blue
         backgroundColor = .primaryBackground
     }
     
     private func setupPlayer() {
-        //create our hero, pluto
+        // create our hero, pluto
         let pluto = SpriteFactory.pluto.node
         pluto.name = kPlutoName
         
-        //scale pluto down (our image is too big)
+        // scale pluto down (our image is too big)
         pluto.size = .init(width: 256, height: 256)
         pluto.xScale = 0.3
         pluto.yScale = 0.3
 
-        //position pluto at the horizontal baseline, center vertically
-
+        // position pluto at the horizontal baseline, center vertically
         pluto.position = CGPoint(x: pluto.size.width / 2 + CGFloat(kPlutoBaseline),
                                  y: frame.midY)
 
@@ -232,32 +236,32 @@ final class GameScene: SKScene, ObservableObject {
         pluto.physicsBody?.collisionBitMask = ColliderType.walls.rawValue
         pluto.zPosition = 2
         
-        //add pluto to scene
+        // add pluto to scene
         addChild(pluto)
     }
     
     private func setupStars(level: Int) {
         let starCount = kStarCount + (kStarPerLevelFactor * level)
 
-        //create starCount stars
+        // create starCount stars
         for i in 0...starCount {
-            //create a star
+            // create a star
             let star = SpriteFactory.star.node
             star.name = kStarName
             
-            //generate a pseudo-random position
+            // generate a pseudo-random position
             let sceneLength = frame.maxX * 10
             let starPositionY: CGFloat = .random(in: frame.minY..<frame.maxY)
             let minStarPositionX = (CGFloat(i) / CGFloat(starCount)) * (sceneLength * 0.9)
             let starPositionX: CGFloat = .random(in: minStarPositionX..<sceneLength)
             star.position = CGPoint(x: starPositionX, y: starPositionY)
             
-            //fixed scale size
+            // fixed scale size
             star.size = .init(width: 24, height: 24)
             star.xScale = 1
             star.yScale = 1
 
-            //setup physics body to collide with asteroids, stars and pluto
+            // setup physics body to collide with asteroids, stars and pluto
             star.physicsBody = SKPhysicsBody(circleOfRadius: star.frame.width/2)
             star.physicsBody?.isDynamic = true
             star.physicsBody?.affectedByGravity = false
@@ -267,7 +271,7 @@ final class GameScene: SKScene, ObservableObject {
             star.physicsBody?.collisionBitMask   = ColliderType.planet.rawValue
             star.zPosition = 1
             
-            //add star to scene
+            // add star to scene
             addChild(star)
         }
     }
@@ -275,39 +279,40 @@ final class GameScene: SKScene, ObservableObject {
     private func setupAsteroids(level: Int) {
         let asteroidCount = kAsteroidCount + (kAsteroidPerLevelFactor * level)
 
-        //create kAsteroidCount asteroids
+        // create kAsteroidCount asteroids
         var clearPath: CGFloat = .random(in: 0.45...0.55)
         for i in 0...asteroidCount {
-            //create a random Asteroid
+            // create a random Asteroid
             let asteroid = SpriteFactory.asteroid.node
             asteroid.name = kAsteroidName
             asteroid.size = .init(width: 72, height: 72)
 
-            //generate a pseudo-random position
+            // generate a pseudo-random position
             let sceneLength = frame.maxX * 10
 
-            //position asteroids on either side of path we keep clear
+            // position asteroids on either side of path we keep clear
             let asteroidPositionY: CGFloat = Bool.random()
             ? .random(in: frame.minY...(frame.maxY * (clearPath + 0.05))) //position UP
             : .random(in: (frame.maxY * (clearPath - 0.05))...frame.maxY) //position DOWN
-            //update clearPath for next round
+
+            // update clearPath for next round
             let shift: CGFloat = .random(in: -0.1..<0.1)
 
-            //bound path to top and bottom
+            // bound path to top and bottom
             clearPath = max(min(clearPath + shift, 0.95), 0.05)
 
-            //weighs X position towards end of scene so level gets harder
+            // weighs X position towards end of scene so level gets harder
             let minAsteroidPosition: CGFloat = (CGFloat(i) / CGFloat(asteroidCount)) * (sceneLength * 0.9)
             let asteroidPositionX: CGFloat = .random(in: minAsteroidPosition..<sceneLength)
             asteroid.position = CGPoint(x: asteroidPositionX, y: asteroidPositionY)
             
-            //size and rotate asteroid at random within bounds
+            // size and rotate asteroid at random within bounds
             let scale: CGFloat = .random(in: 0.4...0.6)
             asteroid.xScale = scale
             asteroid.yScale = scale
             asteroid.zRotation = .random(in: 0...360)
 
-            //setup physics body to collide with other asteroids, stars and pluto
+            // setup physics body to collide with other asteroids, stars and pluto
             asteroid.physicsBody = SKPhysicsBody(circleOfRadius: asteroid.frame.width/2)
             asteroid.physicsBody?.isDynamic = true
             asteroid.physicsBody?.affectedByGravity = false
@@ -318,23 +323,23 @@ final class GameScene: SKScene, ObservableObject {
             asteroid.physicsBody?.collisionBitMask   = ColliderType.planet.rawValue
             asteroid.zPosition = 1
             
-            //add asteroid to scene
+            // add asteroid to scene
             addChild(asteroid)
         }
     }
 
-    //plays explosion sound effect
+    /// plays explosion sound effect
     private func playExplosionSound(volume: CGFloat) {
         let transformedVolume = Float((volume - 0.04) * 10)
         playSoundFromArray(["b1.mp3", "b2.mp3", "b3.mp3", "b4.mp3"], volume: transformedVolume)
     }
     
-    //plays star sound effect
+    /// plays star sound effect
     private func playStarSound() {
         playSoundFromArray(["l1.mp3"], volume: 0.5)
     }
     
-    //plays star sound effect
+    /// plays star sound effect
     private func playLevelUpSound() {
         playSoundFromArray(["a1.mp3"], volume: 0.5)
     }
@@ -376,7 +381,7 @@ final class GameScene: SKScene, ObservableObject {
         asteroid.physicsBody?.isDynamic = false
 
         if intentional == false {
-            levelDelegate?.lifeLost(1)
+            levelDelegate?.execute(.loseHealth())
         }
 
         playExplosionSound(volume: asteroid.xScale)
@@ -385,8 +390,8 @@ final class GameScene: SKScene, ObservableObject {
     private func handleStarCollision(star: SKNode) {
         star.removeFromParent()
 
-        levelDelegate?.lifeGained(1)
-        levelDelegate?.pointsGained(10)
+        levelDelegate?.execute(.gainHealth())
+        levelDelegate?.execute(.gainPoints(amount: 10))
 
         playStarSound()
     }
@@ -396,7 +401,7 @@ final class GameScene: SKScene, ObservableObject {
 
 extension GameScene: SKPhysicsContactDelegate {
 
-    //contact happened between objects
+    // contact happened between objects
     nonisolated func didBegin(_ contact: SKPhysicsContact) {
         let bodies = [contact.bodyA, contact.bodyB]
         let nodes = bodies.map(\.node)

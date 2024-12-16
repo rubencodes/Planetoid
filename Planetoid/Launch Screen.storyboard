@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23094" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23084"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="EHf-IW-A2E">
+            <objects>
+                <viewController id="01J-lp-oVM" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Ze5-6b-2t3">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchScreen" translatesAutoresizingMaskIntoConstraints="NO" id="nQE-KU-Vl2">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Planetoid" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8qU-GM-mc4">
+                                <rect key="frame" x="0.0" y="718" width="393" height="92"/>
+                                <fontDescription key="fontDescription" name="Futura-CondensedExtraBold" family="Futura" pointSize="72"/>
+                                <color key="textColor" name="PrimaryForegroundColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" name="PrimaryBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="nQE-KU-Vl2" firstAttribute="height" secondItem="Ze5-6b-2t3" secondAttribute="height" id="EYh-XP-ZMa"/>
+                            <constraint firstItem="nQE-KU-Vl2" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="EwI-QQ-GfH"/>
+                            <constraint firstAttribute="bottom" secondItem="8qU-GM-mc4" secondAttribute="bottom" constant="42" id="NfV-86-ZRM"/>
+                            <constraint firstItem="8qU-GM-mc4" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="No2-xl-NmZ"/>
+                            <constraint firstItem="nQE-KU-Vl2" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" id="Zbt-pT-8s6"/>
+                            <constraint firstItem="nQE-KU-Vl2" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="a4c-9U-YmK"/>
+                            <constraint firstItem="nQE-KU-Vl2" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="dsU-se-i6x"/>
+                            <constraint firstAttribute="trailing" secondItem="8qU-GM-mc4" secondAttribute="trailing" id="ht9-29-K48"/>
+                            <constraint firstItem="nQE-KU-Vl2" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="mtI-pr-tgb"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="53" y="375"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="LaunchScreen" width="1536" height="3072"/>
+        <namedColor name="PrimaryBackgroundColor">
+            <color red="0.062745098039215685" green="0.10980392156862745" blue="0.24313725490196078" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+        </namedColor>
+        <namedColor name="PrimaryForegroundColor">
+            <color red="0.72549019607843135" green="0.94117647058823528" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+        </namedColor>
+    </resources>
+</document>

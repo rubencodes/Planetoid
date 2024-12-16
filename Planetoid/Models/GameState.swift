@@ -28,4 +28,9 @@ extension GameState {
             return Constants.kInitialLevelValue
         }
     }
+
+    var isPaused: Bool {
+        guard case .play = self else { return true }
+        return false
+    }
 }

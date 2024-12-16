@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		454AE20E2D0F20F70089C166 /* PlanetoidApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 454AE20D2D0F20F70089C166 /* PlanetoidApp.swift */; };
 		45A484701B33D51F002821BC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 45A4846F1B33D51F002821BC /* Assets.xcassets */; };
+		45E122C92D1076E300A73DB7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E122C82D1076E300A73DB7 /* AppDelegate.swift */; };
+		45E122CB2D1083ED00A73DB7 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45E122CA2D1083ED00A73DB7 /* Launch Screen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -16,6 +18,8 @@
 		45A484611B33D51E002821BC /* Planetoid.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Planetoid.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		45A4846F1B33D51F002821BC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		45A484741B33D51F002821BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		45E122C82D1076E300A73DB7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		45E122CA2D1083ED00A73DB7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -79,7 +83,9 @@
 				454AE22C2D0F3FC30089C166 /* View Modifiers */,
 				454AE2102D0F244E0089C166 /* Views */,
 				454AE20D2D0F20F70089C166 /* PlanetoidApp.swift */,
+				45E122C82D1076E300A73DB7 /* AppDelegate.swift */,
 				45A4846F1B33D51F002821BC /* Assets.xcassets */,
+				45E122CA2D1083ED00A73DB7 /* Launch Screen.storyboard */,
 				45A484741B33D51F002821BC /* Info.plist */,
 			);
 			path = Planetoid;
@@ -151,6 +157,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				45E122CB2D1083ED00A73DB7 /* Launch Screen.storyboard in Resources */,
 				45A484701B33D51F002821BC /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -163,6 +170,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				454AE20E2D0F20F70089C166 /* PlanetoidApp.swift in Sources */,
+				45E122C92D1076E300A73DB7 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

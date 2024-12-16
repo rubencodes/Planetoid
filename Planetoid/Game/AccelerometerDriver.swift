@@ -10,8 +10,13 @@ import CoreMotion
 import Foundation
 
 struct AccelerometerDriver: PlutoDriver {
+
+    // MARK: - Private Properties
+
     private let motionManager: CMMotionManager = .init()
     private let initialState: CGFloat
+
+    // MARK: - Lifecycle
 
     init?(initialState: CGFloat) {
         self.init(initialState: initialState, updateInterval: 0.01)
@@ -26,6 +31,8 @@ struct AccelerometerDriver: PlutoDriver {
         motionManager.startAccelerometerUpdates()
         motionManager.accelerometerUpdateInterval = updateInterval
     }
+
+    // MARK: - Internal Functions
 
     func readAdjustmentValue() -> CGFloat {
         guard let data = motionManager.accelerometerData else {

@@ -9,12 +9,18 @@
 import Foundation
 
 struct MouseDriver: PlutoDriver {
+
+    // MARK: - Private Properties
+
     private let initialState: CGFloat
 
+    // MARK: - Lifecycle
+
     init?(initialState: CGFloat) {
-        return nil
         self.initialState = initialState
     }
+
+    // MARK: - Internal Functions
 
     func readAdjustmentValue() -> CGFloat {
         0

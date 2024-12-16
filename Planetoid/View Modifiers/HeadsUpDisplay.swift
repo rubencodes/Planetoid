@@ -98,6 +98,8 @@ struct HeadsUpDisplay: ViewModifier {
                     }
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(.black)
     }
 
     // MARK: - Private Functions

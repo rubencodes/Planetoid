@@ -10,6 +10,13 @@ import SwiftUI
 
 @main
 struct PlanetoidApp: App {
+
+    // MARK: - Internal Properties
+
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
+    // MARK: - Body
+
     var body: some Scene {
         WindowGroup {
             ContentView()

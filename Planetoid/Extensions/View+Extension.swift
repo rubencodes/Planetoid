@@ -18,4 +18,21 @@ extension View {
             .multilineTextAlignment(.center)
             .navigationBarBackButtonHidden()
     }
+
+    func lockOrientation(_ orientation: UIInterfaceOrientationMask) -> some View {
+        task {
+            // Forcing the rotation to portrait
+            await MainActor.run {
+                AppDelegate.orientationLock = orientation
+                UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
+                UIViewController.attemptRotationToDeviceOrientation()
+            }
+        }.onDisappear {
+            // Unlocking the rotation when leaving the view
+            DispatchQueue.main.async {
+                AppDelegate.orientationLock = UIInterfaceOrientationMask.allButUpsideDown
+                UIViewController.attemptRotationToDeviceOrientation()
+            }
+        }
+    }
 }
