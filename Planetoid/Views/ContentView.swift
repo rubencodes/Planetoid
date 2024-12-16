@@ -12,6 +12,7 @@ struct ContentView: View {
 
     // MARK: - Private Properties
 
+    @State private var gameState: GameState = .pause(level: Constants.kInitialLevelValue)
     @State private var isPlayingGame: Bool = false
 
     // MARK: - Body
@@ -30,7 +31,9 @@ struct ContentView: View {
                 }
                 .fullScreenCover(isPresented: $isPlayingGame) {
                     GeometryReader { proxy in
-                        GameView(size: proxy.size)
+                        GameView(state: $gameState,
+                                 size: proxy.size)
+                            .id(gameState.level)
                     }
                 }
         }

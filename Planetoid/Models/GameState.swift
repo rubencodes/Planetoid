@@ -19,7 +19,7 @@ extension GameState {
     var level: Int {
         switch self {
         case .presentNextLevel(let level):
-            return level
+            return level - 1
         case .play(let level):
             return level
         case .pause(let level):

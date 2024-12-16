@@ -27,7 +27,6 @@ struct SplashView: View {
                     .fontWeight(.medium)
             }
 
-
             NavigationLink(value: Route.instructions) {
                 Text("Continue")
                     .kerning(1)
@@ -37,13 +36,7 @@ struct SplashView: View {
             }
             .buttonStyle(.borderedProminent)
         }
-        .padding()
-        .frame(maxWidth: .infinity,
-               maxHeight: .infinity)
-        .foregroundColor(.primaryForeground)
-        .background(.primaryBackground)
-        .multilineTextAlignment(.center)
-        .navigationBarBackButtonHidden()
+        .baseScreen()
     }
 }
 

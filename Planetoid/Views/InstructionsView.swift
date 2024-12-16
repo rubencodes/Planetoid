@@ -37,13 +37,7 @@ struct InstructionsView: View {
             }
             .buttonStyle(.borderedProminent)
         }
-        .padding()
-        .frame(maxWidth: .infinity,
-               maxHeight: .infinity)
-        .foregroundColor(.primaryForeground)
-        .background(.primaryBackground)
-        .multilineTextAlignment(.center)
-        .navigationBarBackButtonHidden()
+        .baseScreen()
     }
 }
 

@@ -17,7 +17,7 @@ struct GameView: View {
     enum LevelSuccess: String, CaseIterable {
         case stellar = "Stellar!"
         case rockStar = "Rock-star!"
-        case outOfThisWorld = "Out of this World!"
+        case outOfThisWorld = "Out of this world!"
     }
 
     enum LevelFailure: String, CaseIterable {
@@ -31,8 +31,8 @@ struct GameView: View {
     // MARK: - Private Properties
 
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var scene: Level1Scene
-    @State private var state: GameState = .pause(level: Constants.kInitialLevelValue)
+    @StateObject private var scene: GameScene
+    @Binding private var state: GameState
     @State private var score: Int = Constants.kInitialScoreValue
     @State private var health: [Int] = {
         (0..<Constants.kInitialHealthValue).map { $0 }
@@ -41,10 +41,12 @@ struct GameView: View {
 
     // MARK: - Lifecycle
 
-    init(size: CGSize) {
+    init(state: Binding<GameState>,
+         size: CGSize) {
+        _state = state
         self.size = size
 
-        let scene = Level1Scene()
+        let scene = GameScene()
         scene.size = size
         scene.scaleMode = .fill
         scene.backgroundColor = .primaryBackground
@@ -89,9 +91,7 @@ struct GameView: View {
 
                 return true
             }, set: { _ in })) {
-                Button {
-                    nextLevel()
-                } label: {
+                Button(action: nextLevel) {
                     Text("Continue")
                 }
             } message: {
@@ -105,9 +105,7 @@ struct GameView: View {
 
                 return true
             }, set: { _ in })) {
-                Button {
-                    reset()
-                } label: {
+                Button(action: reset) {
                     Text("Try again")
                 }
             } message: {
@@ -125,10 +123,8 @@ struct GameView: View {
     }
 
     private func nextLevel() {
-//        guard case .presentNextLevel(let level) = state else { return }
-//        showLevelTitle = true
-//        state = .play(level: level)
-        dismiss()
+        guard case .presentNextLevel(let level) = state else { return }
+        state = .play(level: level)
     }
 }
 
