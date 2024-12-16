@@ -6,10 +6,9 @@
 //  Copyright (c) 2015 Ruben. All rights reserved.
 //
 
-import Combine
-import SpriteKit
-import Foundation
 import AVFoundation
+import Foundation
+import SpriteKit
 
 final class GameScene: SKScene, ObservableObject {
 
@@ -204,7 +203,7 @@ final class GameScene: SKScene, ObservableObject {
         physicsWorld.contactDelegate = self
         
         //set background, dark blue
-        backgroundColor = UIColor(red: 0, green: 0, blue: 140/255, alpha: 1)
+        backgroundColor = .primaryBackground
     }
     
     private func setupPlayer() {

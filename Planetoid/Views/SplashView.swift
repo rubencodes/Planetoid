@@ -29,12 +29,8 @@ struct SplashView: View {
 
             NavigationLink(value: Route.instructions) {
                 Text("Continue")
-                    .kerning(1)
-                    .textCase(.uppercase)
-                    .font(.appButton)
-                    .fontWeight(.black)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.primary)
         }
         .baseScreen()
     }

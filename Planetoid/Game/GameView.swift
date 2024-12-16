@@ -142,7 +142,7 @@ extension GameView: LevelDelegate {
     // User lost life points
     @discardableResult
     func lifeLost(_ amount: Int = 1) -> Int {
-        (0..<amount).forEach { _ in
+        (0..<min(amount, health.count)).forEach { _ in
             _ = health.popLast()
         }
 
