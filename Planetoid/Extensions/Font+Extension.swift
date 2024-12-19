@@ -13,5 +13,6 @@ extension Font {
     static let appTitleSecondary = Font.custom("Futura Condensed ExtraBold", size: 36)
     static let appSubtitle = Font.custom("Futura Medium", size: 14)
     static let appBody = Font.custom("Futura", size: 14)
+    static let appCaption = Font.custom("Futura", size: 10)
     static let appButton = Font.custom("Futura Medium", size: 20)
 }

@@ -12,6 +12,7 @@ protocol GameDelegate {
     @MainActor var currentLevel: Int { get }
     @MainActor var currentScore: Int { get }
     @MainActor var currentHealth: Int { get }
+    @MainActor var isPaused: Bool { get }
 
     @MainActor func execute(_ action: GameAction)
 }

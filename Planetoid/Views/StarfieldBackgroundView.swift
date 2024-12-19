@@ -12,6 +12,8 @@ struct StarfieldBackgroundView: View {
 
     // MARK: - Private Properties
 
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var isVisible: Bool = false
     @State private var offset: CGFloat = .zero
     private var x: [CGFloat] = (0..<1000).map { _ in CGFloat.random(in: 0..<1) }
     private var y: [CGFloat] = (0..<1000).map { _ in CGFloat.random(in: 0..<1) }
@@ -34,15 +36,22 @@ struct StarfieldBackgroundView: View {
                     }
                 }
                 .onReceive(Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()) { _ in
+                    guard isVisible, scenePhase == .background else { return }
                     withAnimation {
                         offset += 1
                     }
+                }
+                .onAppear {
+                    isVisible = true
+                }
+                .onDisappear {
+                    isVisible = false
                 }
         }
         .ignoresSafeArea()
     }
 }
 
-#Preview("", traits: .landscapeLeft) {
+#Preview(traits: .landscapeLeft) {
     StarfieldBackgroundView()
 }

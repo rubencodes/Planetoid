@@ -12,7 +12,7 @@ struct ContentView: View {
 
     // MARK: - Private Properties
 
-    @State private var gameState: GameState = .pause(level: Constants.kInitialLevelValue)
+    @State private var gameState: GameState = .loading
     @State private var isPlayingGame: Bool = false
 
     // MARK: - Body

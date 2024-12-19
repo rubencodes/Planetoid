@@ -14,15 +14,21 @@ struct GameView: View {
 
     // MARK: - Private Properties
 
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var scene: GameScene
     @Binding private var state: GameState
     @State private var score: Int = Constants.kInitialScoreValue
-    @State private var health: [Int] = {
-        (0..<Constants.kInitialHealthValue).map { $0 }
-    }()
+    @State private var health: [Int] = Array(0..<Constants.kInitialHealthValue)
     private let scoreTimer = Timer.publish(every: 1, on: .main, in: .common)
     private let size: CGSize
+
+    private var isCorrectOrientation: Bool {
+        size.width > size.height
+    }
+
+    private var hasInitialized: Bool {
+        state != .loading
+    }
 
     // MARK: - Lifecycle
 
@@ -33,7 +39,7 @@ struct GameView: View {
 
         let scene = GameScene()
         scene.size = size
-        scene.scaleMode = .fill
+        scene.scaleMode = .aspectFit
         scene.backgroundColor = .primaryBackground
         _scene = .init(wrappedValue: scene)
     }
@@ -44,14 +50,18 @@ struct GameView: View {
         SpriteView(scene: scene)
             .frame(width: size.width, height: size.height)
             .renderHeadsUpDisplay($state, score: score, health: health)
+            .orientationLock($state, isCorrectOrientation: isCorrectOrientation)
             .presentSuccessMessage($state)
             .presentFailureMessage($state)
-            .lockOrientation(.landscape)
             .statusBarHidden()
-            .sensoryFeedback(.increase, trigger: Constants.kInitialHealthValue - health.count)
+            .font(.appBody)
             .onReceive(scoreTimer.autoconnect()) { _ in
                 guard case .play = state else { return }
                 score += 1
+            }
+            .onChange(of: scenePhase, initial: true) {
+                guard scenePhase != .active else { return }
+                state = .pause(level: state.level)
             }
             .onChange(of: state, initial: true) {
                 scene.isPaused = state.isPaused
@@ -63,25 +73,34 @@ struct GameView: View {
     }
 }
 
+// MARK: - GameDelegate
+
 extension GameView: GameDelegate {
 
     var currentLevel: Int { state.level }
     var currentScore: Int { score }
     var currentHealth: Int { health.count }
+    var isPaused: Bool { state.isPaused }
 
     func execute(_ action: GameAction) {
         switch action {
         case .ready:
+            guard isCorrectOrientation else {
+                state = .orientationError(level: state.level)
+                return
+            }
+
             state = .play(level: state.level)
         case .gainPoints(let amount):
             score += amount
         case .gainHealth(let amount):
-            (0..<amount).forEach { value in
-                health.append(health.count + value)
-            }
+            health = Array(0..<health.count + amount)
         case .loseHealth(let amount):
-            (0..<min(amount, health.count)).forEach { _ in
-                _ = health.popLast()
+            let newValue = max(health.count - amount, 0)
+            health = if newValue > 0 {
+                Array(0..<newValue)
+            } else {
+                Array()
             }
 
             // if the user is out of points, it's game over.
