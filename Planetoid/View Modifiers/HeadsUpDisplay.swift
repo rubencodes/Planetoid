@@ -41,7 +41,13 @@ struct HeadsUpDisplay: ViewModifier {
         content
             .overlay(HUDView(state: $state, score: score, health: health))
             .overlay(TitleOverlayView(title: $overlayMessage))
-            .overlay(SettingsView(state: $state))
+            .overlay {
+                if case .pause = state {
+                    SettingsView {
+                        state = .play(level: state.level)
+                    }
+                }
+            }
             .onChange(of: state.level, initial: true) {
                 withAnimation(.spring) {
                     overlayMessage = "LEVEL \(state.level)"

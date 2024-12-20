@@ -14,18 +14,25 @@ struct ContentView: View {
 
     @State private var gameState: GameState = .loading
     @State private var isPlayingGame: Bool = false
+    @State private var isShowingSettings: Bool = false
 
     // MARK: - Body
 
     var body: some View {
         NavigationStack {
             SplashView()
+                .environment(\.openSettings) {
+                    isShowingSettings = true
+                }
                 .navigationDestination(for: Route.self) { route in
                     switch route {
                     case .instructions:
                         InstructionsView()
                             .environment(\.playGame) {
                                 isPlayingGame = true
+                            }
+                            .environment(\.openSettings) {
+                                isShowingSettings = true
                             }
                     }
                 }
@@ -36,8 +43,21 @@ struct ContentView: View {
                             .id(gameState.level)
                     }
                 }
+                .blur(radius: isShowingSettings ? 10 : 0)
+                .overlay {
+                    if isShowingSettings {
+                        SettingsView {
+                            isShowingSettings = false
+                        }
+                        .transition(.move(edge: .bottom).combined(with: .opacity).combined(with: .scale))
+                    }
+                }
+                .animation(.spring, value: isShowingSettings)
+                .background {
+                    Color.primaryBackground.ignoresSafeArea()
+                }
         }
-        .background(.primaryBackground)
+        .background(Color.primaryBackground)
     }
 }
 

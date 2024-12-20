@@ -12,7 +12,7 @@ struct SettingsView: View {
 
     // MARK: - Internal Properties
 
-    @Binding var state: GameState
+    @MainActor let dismiss: () -> Void
 
     // MARK: - Private Properties
 
@@ -22,41 +22,39 @@ struct SettingsView: View {
     // MARK: - Body
 
     var body: some View {
-        if case .pause = state {
-            Form {
-                Section {
-                    Toggle(isOn: $isMusicEnabled) {
-                        Text("Music")
-                    }
-                    .listRowBackground(Color.primaryBackground)
-
-                    Toggle(isOn: $areSoundEffectsEnabled) {
-                        Text("Sound Effects")
-                    }
-                    .listRowBackground(Color.primaryBackground)
-                } header: {
-                    renderHeader()
-                        .padding(.top)
-                } footer: {
-                    VStack {
-                        Text("Copyright © 2024")
-                        Text("Ruben Martinez Jr.")
-                            .fontWeight(.semibold)
-                    }
-                    .font(.appCaption)
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 40)
+        Form {
+            Section {
+                Toggle(isOn: $isMusicEnabled) {
+                    Text("Music")
                 }
+                .listRowBackground(Color.primaryBackground)
+
+                Toggle(isOn: $areSoundEffectsEnabled) {
+                    Text("Sound Effects")
+                }
+                .listRowBackground(Color.primaryBackground)
+            } header: {
+                renderHeader()
+                    .padding(.top)
+            } footer: {
+                VStack {
+                    Text("Copyright © 2024")
+                    Text("Ruben Martinez Jr.")
+                        .fontWeight(.semibold)
+                }
+                .font(.appCaption)
+                .frame(maxWidth: .infinity)
+                .padding(.top, 40)
             }
-            .frame(maxWidth: 300)
-            .scrollContentBackground(.hidden)
-            .foregroundStyle(.primaryForeground)
-            .background(Color.primaryBackground.secondary)
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-            .shadow(radius: 8)
-            .padding(20)
         }
+        .frame(maxWidth: 300, maxHeight: 320)
+        .scrollContentBackground(.hidden)
+        .foregroundStyle(.primaryForeground)
+        .background(Color.primaryBackground.secondary)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .shadow(radius: 8)
+        .padding(20)
     }
 
     // MARK: - Private Properties
@@ -69,7 +67,7 @@ struct SettingsView: View {
             Spacer(minLength: 0)
 
             Button {
-                state = .play(level: state.level)
+                dismiss()
             } label: {
                 Label("Resume", systemImage: "xmark")
                     .labelStyle(.iconOnly)
@@ -80,6 +78,10 @@ struct SettingsView: View {
     }
 }
 
-#Preview(traits: .landscapeLeft) {
-    SettingsView(state: .constant(.pause(level: 1)))
+#Preview("Landscape", traits: .landscapeLeft) {
+    SettingsView {}
+}
+
+#Preview("Portrait", traits: .portrait) {
+    SettingsView {}
 }

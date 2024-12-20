@@ -1,14 +1,14 @@
 //
-//  PrimaryButtonStyle.swift
+//  IconButtonStyle.swift
 //  Planetoid
 //
-//  Created by Ruben Martinez Jr. on 12/15/24.
+//  Created by Ruben Martinez Jr. on 12/19/24.
 //  Copyright © 2024 Ruben. All rights reserved.
 //
 
 import SwiftUI
 
-struct PrimaryButtonStyle: ButtonStyle {
+struct IconButtonStyle: ButtonStyle {
 
     // MARK: - Private Properties
 
@@ -18,14 +18,13 @@ struct PrimaryButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .kerning(1)
-            .textCase(.uppercase)
-            .font(.appButton)
-            .fontWeight(.black)
-            .padding(.horizontal, 20)
-            .padding(.vertical, 12)
-            .background(.accent)
-            .clipShape(Capsule())
+            .scaledToFit()
+            .labelStyle(.iconOnly)
+            .frame(width: 24, height: 24)
+            .padding(12)
+            .foregroundStyle(.primaryForeground)
+            .background(.ultraThinMaterial)
+            .clipShape(Circle())
             .opacity(isEnabled ? 1 : 0.5)
             .scaleEffect(x: configuration.isPressed ? 0.85 : 1,
                          y: configuration.isPressed ? 0.85 : 1)
@@ -34,8 +33,8 @@ struct PrimaryButtonStyle: ButtonStyle {
     }
 }
 
-extension ButtonStyle where Self == PrimaryButtonStyle {
-    static var primary: PrimaryButtonStyle {
-        PrimaryButtonStyle()
+extension ButtonStyle where Self == IconButtonStyle {
+    static var icon: IconButtonStyle {
+        IconButtonStyle()
     }
 }

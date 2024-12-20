@@ -37,32 +37,26 @@ struct HUDView: View {
                     Button {
                         state = .pause(level: level)
                     } label: {
-                        Image(systemName: "pause.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 24, height: 24)
-                            .padding(12)
-                            .foregroundStyle(.primaryForeground)
-                            .background(.ultraThinMaterial)
-                            .clipShape(Circle())
+                        Label("Pause", systemImage: "pause.fill")
                     }
-                    .sensoryFeedback(.start, trigger: state)
+                    .buttonStyle(.icon)
                 } else if case .pause(let level) = state {
                     Button {
                         state = .play(level: level)
                     } label: {
-                        Image(systemName: "play.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 24, height: 24)
+                        Label("Resume", systemImage: "play.fill")
                             .offset(x: 2)
-                            .padding(12)
-                            .foregroundStyle(.primaryForeground)
-                            .background(.ultraThinMaterial)
-                            .clipShape(Circle())
                     }
-                    .sensoryFeedback(.stop, trigger: state)
+                    .buttonStyle(.icon)
                 }
+            }
+            .sensoryFeedback(.start, trigger: state) { _, newValue in
+                guard case .play = newValue else { return false }
+                return true
+            }
+            .sensoryFeedback(.stop, trigger: state) { _, newValue in
+                guard case .pause = newValue else { return false }
+                return true
             }
         }
         .padding(12)

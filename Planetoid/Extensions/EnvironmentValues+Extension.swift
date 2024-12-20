@@ -18,3 +18,14 @@ extension EnvironmentValues {
         set { self[PlayGameKey.self] = newValue }
     }
 }
+
+struct OpenSettingsKey: EnvironmentKey {
+    static let defaultValue: @MainActor () -> Void = {}
+}
+
+extension EnvironmentValues {
+    var openSettings: @MainActor () -> Void {
+        get { self[OpenSettingsKey.self] }
+        set { self[OpenSettingsKey.self] = newValue }
+    }
+}
